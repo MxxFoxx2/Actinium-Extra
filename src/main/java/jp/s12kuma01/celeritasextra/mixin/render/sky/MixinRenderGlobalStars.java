@@ -21,9 +21,9 @@ import org.spongepowered.asm.mixin.injection.At;
  * <p>
  * Two independent changes:
  * - a {@code WrapOperation} around {@code World.getStarBrightness} that returns {@code 0.0f} when
- *   the "stars" detail setting is off, suppressing the star pass without rebuilding its geometry, and
+ * the "stars" detail setting is off, suppressing the star pass without rebuilding its geometry, and
  * - an {@code @Overwrite} of {@code generateStars} that rebuilds the star VBO from the configured
- *   star count instead of the hardcoded vanilla count.
+ * star count instead of the hardcoded vanilla count.
  * <p>
  * Star generation is ported from Angelica's NotFine {@code RenderStars}.
  */
