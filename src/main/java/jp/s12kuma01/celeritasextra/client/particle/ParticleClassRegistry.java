@@ -37,26 +37,42 @@ public class ParticleClassRegistry {
 
     private static final ParticleClassRegistry INSTANCE = new ParticleClassRegistry();
 
-    /** fullClassName -> display simple name (never empty). */
+    /**
+     * fullClassName -> display simple name (never empty).
+     */
     private final ConcurrentHashMap<String, String> discoveredClasses = new ConcurrentHashMap<>();
-    /** fullClassName -> owning mod id. */
+    /**
+     * fullClassName -> owning mod id.
+     */
     private final ConcurrentHashMap<String, String> classModNames = new ConcurrentHashMap<>();
-    /** factory instance -> owning mod id, captured at registerParticle time. */
+    /**
+     * factory instance -> owning mod id, captured at registerParticle time.
+     */
     private final ConcurrentHashMap<IParticleFactory, String> factoryModIds = new ConcurrentHashMap<>();
-    /** User-disabled classes. This is the only authoritative, user-owned persisted state. */
+    /**
+     * User-disabled classes. This is the only authoritative, user-owned persisted state.
+     */
     private final ConcurrentHashMap.KeySetView<String, Boolean> disabledClasses = ConcurrentHashMap.newKeySet();
-    /** Per-session identity guard so the hot path does expensive work at most once per class. */
+    /**
+     * Per-session identity guard so the hot path does expensive work at most once per class.
+     */
     private final Set<Class<?>> seenClasses = ConcurrentHashMap.newKeySet();
 
-    /** Set whenever persisted state (discovered cache or disabled set) changes; cleared on save. */
+    /**
+     * Set whenever persisted state (discovered cache or disabled set) changes; cleared on save.
+     */
     private volatile boolean dirty = false;
-    /** Lazily-built mapping of mod source jar/dir -> mod id, for code-source attribution. */
+    /**
+     * Lazily-built mapping of mod source jar/dir -> mod id, for code-source attribution.
+     */
     private volatile Map<File, String> sourceToModId;
 
     private ParticleClassRegistry() {
     }
 
-    /** Returns the process-wide singleton registry. */
+    /**
+     * Returns the process-wide singleton registry.
+     */
     public static ParticleClassRegistry getInstance() {
         return INSTANCE;
     }
@@ -99,7 +115,9 @@ public class ParticleClassRegistry {
     // Discovery
     // ------------------------------------------------------------------
 
-    /** Record a discovered particle class (spawn-time path, no factory context). */
+    /**
+     * Record a discovered particle class (spawn-time path, no factory context).
+     */
     public void recordClass(Class<?> clazz) {
         recordClass(clazz, null);
     }
@@ -122,7 +140,9 @@ public class ParticleClassRegistry {
         }
     }
 
-    /** Capture the owning mod of a factory as it is registered (primary attribution signal). */
+    /**
+     * Capture the owning mod of a factory as it is registered (primary attribution signal).
+     */
     public void registerFactoryMod(IParticleFactory factory, String modId) {
         if (factory != null && modId != null) {
             factoryModIds.put(factory, modId);
@@ -308,12 +328,16 @@ public class ParticleClassRegistry {
     // Disabled set (authoritative user data)
     // ------------------------------------------------------------------
 
-    /** Returns whether the user has disabled the given fully-qualified class. */
+    /**
+     * Returns whether the user has disabled the given fully-qualified class.
+     */
     public boolean isClassDisabled(String fullClassName) {
         return disabledClasses.contains(fullClassName);
     }
 
-    /** Returns whether the disabled set is empty, i.e. no particle filtering is active. */
+    /**
+     * Returns whether the disabled set is empty, i.e. no particle filtering is active.
+     */
     public boolean isEmptyDisabled() {
         return disabledClasses.isEmpty();
     }
@@ -371,12 +395,16 @@ public class ParticleClassRegistry {
         return Collections.unmodifiableMap(discoveredClasses);
     }
 
-    /** Returns whether persisted state has changed since the last {@link #markClean()}. */
+    /**
+     * Returns whether persisted state has changed since the last {@link #markClean()}.
+     */
     public boolean isDirty() {
         return dirty;
     }
 
-    /** Clears the dirty flag once the registry state has been persisted. */
+    /**
+     * Clears the dirty flag once the registry state has been persisted.
+     */
     public void markClean() {
         dirty = false;
     }
@@ -413,7 +441,9 @@ public class ParticleClassRegistry {
         }
     }
 
-    /** Export discovered classes as "fullName|simpleName" strings for config persistence. */
+    /**
+     * Export discovered classes as "fullName|simpleName" strings for config persistence.
+     */
     public String[] getDiscoveredClassesArray() {
         return discoveredClasses.entrySet().stream()
                 .map(e -> e.getKey() + "|" + e.getValue())

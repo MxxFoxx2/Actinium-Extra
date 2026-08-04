@@ -116,17 +116,23 @@ public class FrameCounter {
         return avgDelta > 0 ? (int) (1_000_000_000.0 / avgDelta) : 0;
     }
 
-    /** Returns the most recently cached average FPS over the rolling 5-second window. */
+    /**
+     * Returns the most recently cached average FPS over the rolling 5-second window.
+     */
     public static int getAverageFps() {
         return cachedAverageFps;
     }
 
-    /** Returns the most recently cached 1% low FPS (average of the slowest 1% of frames in the window). */
+    /**
+     * Returns the most recently cached 1% low FPS (average of the slowest 1% of frames in the window).
+     */
     public static int getOnePercentLowFps() {
         return cachedOnePercentLowFps;
     }
 
-    /** Returns the most recently cached 0.1% low FPS (average of the slowest 0.1% of frames in the window). */
+    /**
+     * Returns the most recently cached 0.1% low FPS (average of the slowest 0.1% of frames in the window).
+     */
     public static int getPointOnePercentLowFps() {
         return cachedPointOnePercentLowFps;
     }

@@ -16,7 +16,9 @@ import java.util.Map;
 @Mixin(ParticleManager.class)
 public interface IMixinParticleManager {
 
-    /** Returns the internal map of particle IDs to their registered {@link IParticleFactory}. */
+    /**
+     * Returns the internal map of particle IDs to their registered {@link IParticleFactory}.
+     */
     @Accessor("particleTypes")
     Map<Integer, IParticleFactory> getParticleTypes();
 }

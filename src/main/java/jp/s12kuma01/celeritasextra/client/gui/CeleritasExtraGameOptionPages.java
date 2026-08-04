@@ -30,7 +30,9 @@ public class CeleritasExtraGameOptionPages {
 
     private static final CeleritasExtraOptionsStorage celeritasExtraOpts = new CeleritasExtraOptionsStorage();
 
-    /** Plain toggle with no flag, performance impact, or enable gate. */
+    /**
+     * Plain toggle with no flag, performance impact, or enable gate.
+     */
     private static OptionImpl<CeleritasExtraGameOptions, Boolean> booleanOption(
             String translationKey,
             BiConsumer<CeleritasExtraGameOptions, Boolean> setter,
@@ -38,7 +40,9 @@ public class CeleritasExtraGameOptionPages {
         return booleanOption(translationKey, setter, getter, null, null, null);
     }
 
-    /** Toggle carrying a performance {@link OptionImpact} hint. */
+    /**
+     * Toggle carrying a performance {@link OptionImpact} hint.
+     */
     private static OptionImpl<CeleritasExtraGameOptions, Boolean> booleanOption(
             String translationKey,
             BiConsumer<CeleritasExtraGameOptions, Boolean> setter,
@@ -47,7 +51,9 @@ public class CeleritasExtraGameOptionPages {
         return booleanOption(translationKey, setter, getter, null, impact, null);
     }
 
-    /** Toggle carrying an {@link OptionFlag} (e.g. an asset or renderer reload on change). */
+    /**
+     * Toggle carrying an {@link OptionFlag} (e.g. an asset or renderer reload on change).
+     */
     private static OptionImpl<CeleritasExtraGameOptions, Boolean> booleanOption(
             String translationKey,
             BiConsumer<CeleritasExtraGameOptions, Boolean> setter,
@@ -56,7 +62,9 @@ public class CeleritasExtraGameOptionPages {
         return booleanOption(translationKey, setter, getter, flag, null, null);
     }
 
-    /** Toggle carrying both an {@link OptionFlag} and a performance {@link OptionImpact} hint. */
+    /**
+     * Toggle carrying both an {@link OptionFlag} and a performance {@link OptionImpact} hint.
+     */
     private static OptionImpl<CeleritasExtraGameOptions, Boolean> booleanOption(
             String translationKey,
             BiConsumer<CeleritasExtraGameOptions, Boolean> setter,
@@ -66,7 +74,9 @@ public class CeleritasExtraGameOptionPages {
         return booleanOption(translationKey, setter, getter, flag, impact, null);
     }
 
-    /** Enable-gated toggle: greyed out (live) while {@code enabled} returns false. */
+    /**
+     * Enable-gated toggle: greyed out (live) while {@code enabled} returns false.
+     */
     private static OptionImpl<CeleritasExtraGameOptions, Boolean> booleanOption(
             String translationKey,
             BiConsumer<CeleritasExtraGameOptions, Boolean> setter,
@@ -75,7 +85,9 @@ public class CeleritasExtraGameOptionPages {
         return booleanOption(translationKey, setter, getter, null, null, enabled);
     }
 
-    /** Enable-gated toggle with a flag (e.g. asset reload). */
+    /**
+     * Enable-gated toggle with a flag (e.g. asset reload).
+     */
     private static OptionImpl<CeleritasExtraGameOptions, Boolean> booleanOption(
             String translationKey,
             BiConsumer<CeleritasExtraGameOptions, Boolean> setter,
@@ -116,7 +128,9 @@ public class CeleritasExtraGameOptionPages {
         return builder.build();
     }
 
-    /** Integer slider with no enable gate or performance-impact hint. */
+    /**
+     * Integer slider with no enable gate or performance-impact hint.
+     */
     private static OptionImpl<CeleritasExtraGameOptions, Integer> sliderOption(
             String translationKey,
             int min, int max, int step,
@@ -126,7 +140,9 @@ public class CeleritasExtraGameOptionPages {
         return sliderOption(translationKey, min, max, step, formatter, setter, getter, null, null);
     }
 
-    /** Integer slider gated by an {@code enabled} predicate. */
+    /**
+     * Integer slider gated by an {@code enabled} predicate.
+     */
     private static OptionImpl<CeleritasExtraGameOptions, Integer> sliderOption(
             String translationKey,
             int min, int max, int step,

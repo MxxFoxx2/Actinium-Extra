@@ -24,7 +24,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ParticleDiscoveryHandler {
 
-    /** The effectRenderer instance most recently scanned; a change means a new world was loaded. */
+    /**
+     * The effectRenderer instance most recently scanned; a change means a new world was loaded.
+     */
     private static ParticleManager lastScanned = null;
 
     /**

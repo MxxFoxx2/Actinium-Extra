@@ -16,7 +16,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(Biome.class)
 public class MixinBiome {
 
-    /** Plains-like temperature; produces the standard overworld sky blue. */
+    /**
+     * Plains-like temperature; produces the standard overworld sky blue.
+     */
     private static final float CELERITASEXTRA$UNIFORM_TEMPERATURE = 0.8F;
 
     @ModifyVariable(method = "getSkyColorByTemp", at = @At("HEAD"), argsOnly = true, ordinal = 0)

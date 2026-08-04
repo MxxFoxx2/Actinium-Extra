@@ -22,7 +22,9 @@ import java.util.List;
  */
 public final class ItemFrameLodState {
 
-    /** True only while rendering the content of a framed item that is beyond the LOD distance. */
+    /**
+     * True only while rendering the content of a framed item that is beyond the LOD distance.
+     */
     public static boolean active = false;
 
     private ItemFrameLodState() {

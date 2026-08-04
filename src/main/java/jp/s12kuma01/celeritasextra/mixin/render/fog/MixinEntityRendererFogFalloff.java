@@ -26,7 +26,9 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(EntityRenderer.class)
 public class MixinEntityRendererFogFalloff {
 
-    /** Vanilla GL_LINEAR fog end == farPlaneDistance; used to keep custom fog start below the end. */
+    /**
+     * Vanilla GL_LINEAR fog end == farPlaneDistance; used to keep custom fog start below the end.
+     */
     @Shadow
     private float farPlaneDistance;
 

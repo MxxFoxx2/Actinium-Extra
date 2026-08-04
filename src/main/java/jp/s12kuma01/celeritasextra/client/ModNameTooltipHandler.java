@@ -30,7 +30,9 @@ import java.util.Map;
 @SideOnly(Side.CLIENT)
 public final class ModNameTooltipHandler {
 
-    /** Blue + italic — the conventional Mod Name Tooltip styling. */
+    /**
+     * Blue + italic — the conventional Mod Name Tooltip styling.
+     */
     private static final String MOD_NAME_FORMAT = TextFormatting.BLUE.toString() + TextFormatting.ITALIC;
 
     private ModNameTooltipHandler() {
@@ -60,7 +62,9 @@ public final class ModNameTooltipHandler {
         }
     }
 
-    /** Resolve the owning mod's display name, or {@code null} when it can't be attributed. */
+    /**
+     * Resolve the owning mod's display name, or {@code null} when it can't be attributed.
+     */
     @Nullable
     private static String getModName(ItemStack itemStack) {
         if (itemStack.isEmpty()) {

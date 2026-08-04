@@ -15,11 +15,11 @@ import java.util.List;
  * <p>
  * Two construction events are handled:
  * - {@link OptionGUIConstructionEvent} adds the five Celeritas Extra pages
- *   (animation, particle, details, render, extra) built by
- *   {@link CeleritasExtraGameOptionPages}.
+ * (animation, particle, details, render, extra) built by
+ * {@link CeleritasExtraGameOptionPages}.
  * - {@link OptionGroupConstructionEvent} rewrites the vanilla WINDOW group,
- *   swapping the plain Fullscreen and VSync boolean toggles for richer
- *   three-way cycling controls.
+ * swapping the plain Fullscreen and VSync boolean toggles for richer
+ * three-way cycling controls.
  */
 public class CeleritasExtraOptionsListener {
 

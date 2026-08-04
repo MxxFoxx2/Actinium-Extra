@@ -84,7 +84,9 @@ public class MixinIngredientListOverlay {
     // Input: make the hidden grid inert (search bar/config button untouched)
     // ------------------------------------------------------------------
 
-    /** The recipe-focus source JEI's InputHandler queries on click / recipe key — null hides it. */
+    /**
+     * The recipe-focus source JEI's InputHandler queries on click / recipe key — null hides it.
+     */
     @Inject(
             method = "getIngredientUnderMouse(II)Lmezz/jei/input/IClickedIngredient;",
             at = @At("HEAD"), cancellable = true, remap = false
@@ -95,7 +97,9 @@ public class MixinIngredientListOverlay {
         }
     }
 
-    /** Public API used by other mods to read the ingredient under the mouse. */
+    /**
+     * Public API used by other mods to read the ingredient under the mouse.
+     */
     @Inject(
             method = "getIngredientUnderMouse()Ljava/lang/Object;",
             at = @At("HEAD"), cancellable = true, remap = false
@@ -106,7 +110,9 @@ public class MixinIngredientListOverlay {
         }
     }
 
-    /** Ghost-drag source + focus element — null while hidden. */
+    /**
+     * Ghost-drag source + focus element — null while hidden.
+     */
     @Inject(method = "getElementUnderMouse", at = @At("HEAD"), cancellable = true, remap = false)
     private void celeritasExtra$noElementUnderMouse(CallbackInfoReturnable<IIngredientListElement> cir) {
         if (celeritasExtra$isHidden()) {
@@ -114,7 +120,9 @@ public class MixinIngredientListOverlay {
         }
     }
 
-    /** Don't report any visible ingredients while hidden. */
+    /**
+     * Don't report any visible ingredients while hidden.
+     */
     @Inject(method = "getVisibleIngredients", at = @At("HEAD"), cancellable = true, remap = false)
     private void celeritasExtra$noVisibleIngredients(CallbackInfoReturnable<ImmutableList<Object>> cir) {
         if (celeritasExtra$isHidden()) {
@@ -136,7 +144,9 @@ public class MixinIngredientListOverlay {
         }
     }
 
-    /** Swallow grid clicks (e.g. invisible navigation buttons) while hidden; search/config still run. */
+    /**
+     * Swallow grid clicks (e.g. invisible navigation buttons) while hidden; search/config still run.
+     */
     @WrapOperation(
             method = "handleMouseClicked",
             at = @At(value = "INVOKE",
@@ -152,7 +162,9 @@ public class MixinIngredientListOverlay {
         return original.call(contents, mouseX, mouseY, mouseButton);
     }
 
-    /** Swallow grid keyboard navigation while hidden; typing in the (focused) search bar still works. */
+    /**
+     * Swallow grid keyboard navigation while hidden; typing in the (focused) search bar still works.
+     */
     @WrapOperation(
             method = "onKeyPressed",
             at = @At(value = "INVOKE",

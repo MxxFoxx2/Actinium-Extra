@@ -12,7 +12,9 @@ import net.minecraft.util.math.MathHelper;
  */
 public final class CloudPassState {
 
-    /** True while EntityRenderer.renderCloudsCheck is executing. */
+    /**
+     * True while EntityRenderer.renderCloudsCheck is executing.
+     */
     public static boolean inCloudPass = false;
 
     private CloudPassState() {

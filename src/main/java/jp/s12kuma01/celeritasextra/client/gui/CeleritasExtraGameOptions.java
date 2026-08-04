@@ -279,7 +279,7 @@ public class CeleritasExtraGameOptions {
      * - OFF: no vsync; frames are presented as fast as they render
      * - ON: standard vsync; frames are capped to the display refresh rate
      * - ADAPTIVE: vsync that disengages below the refresh rate to reduce stutter, requiring driver
-     *   support for {@code GLX_EXT_swap_control_tear} / {@code WGL_EXT_swap_control_tear}
+     * support for {@code GLX_EXT_swap_control_tear} / {@code WGL_EXT_swap_control_tear}
      */
     public enum VerticalSyncOption {
         OFF("celeritasextra.option.vertical_sync.off"),
@@ -545,12 +545,16 @@ public class CeleritasExtraGameOptions {
      */
     private record BooleanProperty(String category, String key, boolean defaultValue, String comment,
                                    Consumer<Boolean> setter, Supplier<Boolean> getter) {
-        /** Reads the entry from {@code config} (creating it with its default if absent) into the bound field. */
+        /**
+         * Reads the entry from {@code config} (creating it with its default if absent) into the bound field.
+         */
         void load(Configuration config) {
             setter.accept(config.getBoolean(key, category, defaultValue, comment));
         }
 
-        /** Writes the bound field's current value into {@code config}. */
+        /**
+         * Writes the bound field's current value into {@code config}.
+         */
         void save(Configuration config) {
             config.get(category, key, defaultValue).set(getter.get());
         }
@@ -564,12 +568,16 @@ public class CeleritasExtraGameOptions {
      */
     private record IntProperty(String category, String key, int defaultValue, int min, int max, String comment,
                                Consumer<Integer> setter, Supplier<Integer> getter) {
-        /** Reads and clamps the entry from {@code config} (creating it with its default if absent) into the bound field. */
+        /**
+         * Reads and clamps the entry from {@code config} (creating it with its default if absent) into the bound field.
+         */
         void load(Configuration config) {
             setter.accept(config.getInt(key, category, defaultValue, min, max, comment));
         }
 
-        /** Writes the bound field's current value into {@code config}. */
+        /**
+         * Writes the bound field's current value into {@code config}.
+         */
         void save(Configuration config) {
             config.get(category, key, defaultValue).set(getter.get());
         }

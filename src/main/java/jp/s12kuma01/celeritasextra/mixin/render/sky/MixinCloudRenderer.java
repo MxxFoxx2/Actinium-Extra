@@ -34,7 +34,8 @@ public class MixinCloudRenderer {
     private int renderDistance;
 
     @Shadow
-    private void dispose() {}
+    private void dispose() {
+    }
 
     @Unique
     private int celeritasExtra$prevCloudDist = -1;
