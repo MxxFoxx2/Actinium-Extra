@@ -1,71 +1,39 @@
-<div align="center">
-
 # Celeritas Extra
 
-**Aiming to bring compelling video options to Celeritas 1.12.2 (CRL).**
+Celeritas Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases) on Minecraft 1.12.2. It adds more graphics, particle, HUD, and window settings to the Celeritas video settings screen.
 
-![Minecraft](https://img.shields.io/badge/Minecraft-1.12.2-62B47A?style=flat-square)
-![Loader](https://img.shields.io/badge/Loader-Cleanroom-5865F2?style=flat-square)
-![Requires](https://img.shields.io/badge/Requires-Celeritas-E67E22?style=flat-square)
-![License](https://img.shields.io/badge/License-LGPL--3.0-97CA00?style=flat-square)
+The mod started as a port of features from Sodium Extra and Rubidium/Embeddium Extra. It also includes several additions and backports made specifically for the Cleanroom 1.12.2 environment.
 
-</div>
+## Requirements
 
----
+- [Cleanroom Loader](https://github.com/CleanroomMC/Cleanroom) 0.6.0-alpha or newer
+- [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases) 2.4.0 or newer
 
-Celeritas Extra is an unofficial mod that ports and integrates features from Rubidium / Embeddium Extra (itself a port of Sodium Extra) — along with a number of original features — into Celeritas 1.12.2 (CRL).
-Once installed, it lets you tweak fine-grained settings such as animations, particles, details, and the HUD — OptiFine-style — directly and intuitively from the Celeritas video-settings screen.
+## Features
 
-## 📦 Requirements
+- Animation controls for water, lava, fire, portals, and block textures.
+- Global and per-type particle controls, including options for rain splashes and block particles. Vanilla and modded particle classes are discovered automatically and cached between launches.
+- Controls for the sky, stars and star count, the sun and moon, weather, biome colors, sky colors, and void fog.
+- Fog distance and start controls. Blindness, underwater, and lava fog are kept even when normal fog is disabled.
+- Cloud height, distance, scale (0.25x to 4.00x), and translucency controls.
+- MoreCulling-style item frame LOD for large frame or map walls. It is disabled by default.
+- Render toggles for item frames, armor stands, paintings, pistons, beacon beams, enchanting table books, name tags, light updates, and vanilla screen shaders.
+- FPS and coordinate overlays with configurable position and text contrast. Extended FPS statistics include average FPS, 1% low, and 0.1% low.
+- Mod-name tooltips, per-type toast controls, a steady F3 debug screen, and renderer names in the F3 profiler pie chart.
+- Windowed, borderless, and fullscreen modes, plus Off, On, and Adaptive VSync.
 
-| | |
-|---|---|
-| **Loader** | Cleanroom Loader 0.5.0+ |
-| **Dependency** | [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases) 2.4.0+ — available from kappa-maintainer's auto-build repository |
+## Credits
 
-## ✨ Features
+- FlashyReese, creator of Sodium Extra
+- dima_dencep, creator of Rubidium and Embeddium Extra
+- embeddedt, creator of Celeritas
+- CleanroomMC, for Cleanroom Loader, CleanroomModTemplate, and related tools
+- Everyone who has contributed translations
 
-### Animations
-Master toggle for all animations, plus individual control of **water, lava, fire, portal, and block** animations.
+## License
 
-### Particles
-- Global particle toggle, with individual toggles for **rain splash, block break, and block-breaking** particles.
-- **Per-particle-class control** — every particle type (including modded ones) is auto-discovered and can be toggled individually. Classes are found by scanning the registered particle factories at world load, supplemented by runtime detection as particles spawn (the only reliable way to catch mod particles registered as lambdas). Discovered classes are cached so they appear from launch in later sessions, and the cache is pruned when a mod is removed.
+Celeritas Extra is licensed under the [LGPL-3.0](LICENSE.md).
 
-### Details
-Toggle **sky, stars** (with an adjustable star count), **sun & moon, rain & snow, biome colors, sky colors, void particles, and void fog**.
+## AI usage
 
-### Render
-- **Fog** — toggle, start-distance multiplier, and render distance (in chunks). Gameplay fog (blindness, underwater, lava) is always preserved, even with fog turned off.
-- **Clouds** — toggle, height, render distance (extended range), scale, and translucency (Default / Always / Never).
-- **Item Frame LOD** — beyond a configurable distance, framed items render with fewer faces and framed maps are hidden, to lighten large item-frame and map walls. *(Off by default.)*
-- **Entity & block rendering toggles** — item frames, armor stands, paintings, pistons, beacon beams (with an optional beam-height limit), and enchanting-table books.
-- **Name tags** — player and item-frame name-tag toggles.
-- **Light Updates** toggle and **Prevent Shaders** (blocks vanilla screen shaders, e.g. the spider-vision distortion).
-
-### Extras
-- **FPS overlay** — current FPS, with optional extended metrics (average, 1% low, 0.1% low).
-- **Coordinates overlay** — with an "ignore reduced debug info" option.
-- **Overlay position & contrast** — corner position and text contrast (None / Background / Shadow), shared by the FPS and coordinates overlays.
-- **Mod Name Tooltip** — show the source mod's name at the bottom of every item's tooltip.
-- **Toasts** — master toggle plus per-type control (advancement, recipe, tutorial, system).
-- **Steady Debug HUD** — refresh the F3 screen on a fixed tick interval instead of every frame.
-- **F3 profiler sections** — labels entity and block-entity renderers as sections in the debug profiler pie chart (F3), to help spot render bottlenecks.
-### Window
-- **Screen Mode** — Windowed / Borderless / Fullscreen (replaces the vanilla fullscreen toggle).
-- **VSync** — Off / On / Adaptive (replaces the vanilla VSync toggle).
-
-## 📄 License
-Licensed under **LGPL-3.0** — see [LICENSE.md](LICENSE.md).
-
-## 🙏 Credits
-- **FlashyReese** — creator of Sodium Extra.
-- **dima_dencep** — creator of Rubidium / Embeddium Extra.
-- **embeddedt** — creator of Celeritas.
-- **CleanroomMC** — CleanroomModTemplate and various other resources.
-- Everyone who contributed translations.
-
-## ⚠️ Notice
-Part of this mod's code is written with the help of generative AI. I review the generated code beforehand, but on rare occasions an imperfection may still remain — if you spot one, I'd appreciate it if you let me know via an Issue.
-
-I'm also well aware that some people feel uneasy about, or dislike, software that uses generative AI. If you're okay with that, I'd be glad to have you use this mod.
+Some code in this project was written with AI assistance. Changes are reviewed before they are included.
