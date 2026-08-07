@@ -6,7 +6,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
 
 /**
@@ -21,7 +20,10 @@ public class FrameCounter {
     private static final long WINDOW_NS = 5_000_000_000L;
     private static final long CACHE_INTERVAL_NS = 500_000_000L;
 
-    private static final ArrayDeque<long[]> frameSamples = new ArrayDeque<>();
+    private static long[] sampleTimes = new long[512];
+    private static long[] sampleDeltas = new long[512];
+    private static int sampleHead;
+    private static int sampleCount;
 
     private static long lastFrameTime = 0;
     private static long lastCacheTime = 0;
@@ -50,14 +52,15 @@ public class FrameCounter {
         if (lastFrameTime != 0) {
             long delta = now - lastFrameTime;
             if (delta > 0) {
-                frameSamples.addLast(new long[]{now, delta});
+                addSample(now, delta);
             }
         }
         lastFrameTime = now;
 
         // Evict samples older than 5 seconds
-        while (!frameSamples.isEmpty() && (now - frameSamples.peekFirst()[0]) > WINDOW_NS) {
-            frameSamples.pollFirst();
+        while (sampleCount > 0 && now - sampleTimes[sampleHead] > WINDOW_NS) {
+            sampleHead = (sampleHead + 1) % sampleTimes.length;
+            sampleCount--;
         }
 
         // Recalculate cached stats every 500ms
@@ -72,7 +75,7 @@ public class FrameCounter {
      * resetting all three to zero when the window holds no samples.
      */
     private static void recalculate() {
-        int size = frameSamples.size();
+        int size = sampleCount;
         if (size == 0) {
             cachedAverageFps = 0;
             cachedOnePercentLowFps = 0;
@@ -81,18 +84,39 @@ public class FrameCounter {
         }
 
         long[] deltas = new long[size];
-        int i = 0;
         long totalDelta = 0;
-        for (var sample : frameSamples) {
-            deltas[i] = sample[1];
-            totalDelta += sample[1];
-            i++;
+        for (int i = 0; i < size; i++) {
+            long delta = sampleDeltas[(sampleHead + i) % sampleDeltas.length];
+            deltas[i] = delta;
+            totalDelta += delta;
         }
 
+        Arrays.sort(deltas);
         double avgDelta = (double) totalDelta / size;
         cachedAverageFps = avgDelta > 0 ? (int) (1_000_000_000.0 / avgDelta) : 0;
         cachedOnePercentLowFps = computePercentileLow(deltas, 1.0);
         cachedPointOnePercentLowFps = computePercentileLow(deltas, 0.1);
+    }
+
+    private static void addSample(long time, long delta) {
+        if (sampleCount == sampleTimes.length) {
+            int newCapacity = sampleTimes.length * 2;
+            long[] newTimes = new long[newCapacity];
+            long[] newDeltas = new long[newCapacity];
+            for (int i = 0; i < sampleCount; i++) {
+                int oldIndex = (sampleHead + i) % sampleTimes.length;
+                newTimes[i] = sampleTimes[oldIndex];
+                newDeltas[i] = sampleDeltas[oldIndex];
+            }
+            sampleTimes = newTimes;
+            sampleDeltas = newDeltas;
+            sampleHead = 0;
+        }
+
+        int tail = (sampleHead + sampleCount) % sampleTimes.length;
+        sampleTimes[tail] = time;
+        sampleDeltas[tail] = delta;
+        sampleCount++;
     }
 
     /**
@@ -103,13 +127,10 @@ public class FrameCounter {
         int count = (int) Math.ceil(deltas.length * (percent / 100.0));
         if (count == 0) count = 1;
 
-        long[] sorted = deltas.clone();
-        Arrays.sort(sorted);
-
         // Sorted ascending — take the last `count` entries (slowest frames)
         long sum = 0;
-        for (int i = sorted.length - count; i < sorted.length; i++) {
-            sum += sorted[i];
+        for (int i = deltas.length - count; i < deltas.length; i++) {
+            sum += deltas[i];
         }
 
         double avgDelta = (double) sum / count;

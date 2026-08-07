@@ -23,7 +23,7 @@ public class MixinBiomeColorHelper {
     @Unique
     private static final int DEFAULT_GRASS_COLOR = 0x91BD59;
     @Unique
-    private static final int DEFAULT_WATER_COLOR = 0x3F76E4;
+    private static final int DEFAULT_WATER_COLOR = 0xFFFFFF;
     @Unique
     private static final int DEFAULT_FOLIAGE_COLOR = 0x59AE30;
 
@@ -32,7 +32,7 @@ public class MixinBiomeColorHelper {
      */
     @Inject(
             method = "getGrassColorAtPos",
-            at = @At("RETURN"),
+            at = @At("HEAD"),
             cancellable = true
     )
     private static void overrideGrassColor(CallbackInfoReturnable<Integer> cir) {
@@ -46,7 +46,7 @@ public class MixinBiomeColorHelper {
      */
     @Inject(
             method = "getWaterColorAtPos",
-            at = @At("RETURN"),
+            at = @At("HEAD"),
             cancellable = true
     )
     private static void overrideWaterColor(CallbackInfoReturnable<Integer> cir) {
@@ -60,7 +60,7 @@ public class MixinBiomeColorHelper {
      */
     @Inject(
             method = "getFoliageColorAtPos",
-            at = @At("RETURN"),
+            at = @At("HEAD"),
             cancellable = true
     )
     private static void overrideFoliageColor(CallbackInfoReturnable<Integer> cir) {

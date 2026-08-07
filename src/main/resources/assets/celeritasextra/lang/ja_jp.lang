@@ -48,8 +48,6 @@ celeritasextra.option.details.biome_colors=バイオームの色
 celeritasextra.option.details.biome_colors.tooltip=有効にした場合、バイオームの色はそれぞれのバイオームに基づいて変更されます。
 celeritasextra.option.details.sky_colors=空の色
 celeritasextra.option.details.sky_colors.tooltip=バイオームに基づく空の色を適用します。
-celeritasextra.option.details.void_particles=奈落のパーティクル
-celeritasextra.option.details.void_particles.tooltip=有効にした場合、ワールドの下で奈落のパーティクルが描画されます。
 celeritasextra.option.details.void_fog=奈落の霧
 celeritasextra.option.details.void_fog.tooltip=有効にした場合、ワールドの下で奈落の霧が描画されます。
 
@@ -69,7 +67,7 @@ celeritasextra.option.render.cloud_height.tooltip=描画される雲の高さを
 celeritasextra.option.render.cloud_distance=雲の描画距離
 celeritasextra.option.render.cloud_distance.tooltip=雲の描画距離をチャンク単位で制御します。0 = デフォルト（描画距離を使用）。
 celeritasextra.option.render.cloud_scale=雲のスケール
-celeritasextra.option.render.cloud_scale.tooltip=雲の大きさを制御します。1 = 最小、4 = デフォルト（バニラ）。
+celeritasextra.option.render.cloud_scale.tooltip=雲の大きさを0.25倍～4.00倍で調整します。1.00倍がバニラのデフォルトです。
 celeritasextra.option.render.cloud_translucency=雲の透過
 celeritasextra.option.render.cloud_translucency.tooltip=雲が半透明になるタイミングを制御します。デフォルト: 雲の高さに基づく。常時: 常に半透明。しない: 常に不透明。
 celeritasextra.option.cloud_translucency.default=デフォルト

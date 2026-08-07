@@ -48,7 +48,8 @@ public class ParticleClassRegistry {
     /**
      * factory instance -> owning mod id, captured at registerParticle time.
      */
-    private final ConcurrentHashMap<IParticleFactory, String> factoryModIds = new ConcurrentHashMap<>();
+    private final Map<IParticleFactory, String> factoryModIds =
+            Collections.synchronizedMap(new WeakHashMap<>());
     /**
      * User-disabled classes. This is the only authoritative, user-owned persisted state.
      */
@@ -127,12 +128,16 @@ public class ParticleClassRegistry {
      * runs at most once per class per session, so this is cheap to call on the per-particle path.
      */
     public void recordClass(Class<?> clazz, IParticleFactory factory) {
-        if (clazz == null || !seenClasses.add(clazz)) {
+        if (clazz == null) {
             return;
         }
+        boolean firstSeen = seenClasses.add(clazz);
         String fullName = clazz.getName();
-        if (discoveredClasses.putIfAbsent(fullName, simpleNameOf(clazz)) == null) {
+        if (firstSeen && discoveredClasses.putIfAbsent(fullName, simpleNameOf(clazz)) == null) {
             dirty = true;
+        }
+        if (!firstSeen && (factory == null || classModNames.containsKey(fullName))) {
+            return;
         }
         String modId = resolveModId(clazz, factory);
         if (modId != null) {
@@ -379,7 +384,7 @@ public class ParticleClassRegistry {
      * @return the fully-qualified names of all user-disabled classes
      */
     public String[] getDisabledClassesArray() {
-        return disabledClasses.toArray(new String[0]);
+        return disabledClasses.stream().sorted().toArray(String[]::new);
     }
 
     // ------------------------------------------------------------------
@@ -446,6 +451,7 @@ public class ParticleClassRegistry {
      */
     public String[] getDiscoveredClassesArray() {
         return discoveredClasses.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
                 .map(e -> e.getKey() + "|" + e.getValue())
                 .toArray(String[]::new);
     }

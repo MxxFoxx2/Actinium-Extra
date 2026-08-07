@@ -3,18 +3,12 @@ package jp.s12kuma01.celeritasextra.mixin.render.sky;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import jp.s12kuma01.celeritasextra.client.CeleritasExtraClientMod;
-import jp.s12kuma01.celeritasextra.client.RenderStars;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.world.World;
+import net.minecraft.client.multiplayer.WorldClient;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 /**
  * Controls star visibility and the number of stars generated on {@code RenderGlobal}.
@@ -22,19 +16,11 @@ import org.spongepowered.asm.mixin.injection.At;
  * Two independent changes:
  * - a {@code WrapOperation} around {@code World.getStarBrightness} that returns {@code 0.0f} when
  * the "stars" detail setting is off, suppressing the star pass without rebuilding its geometry, and
- * - an {@code @Overwrite} of {@code generateStars} that rebuilds the star VBO from the configured
- * star count instead of the hardcoded vanilla count.
- * <p>
- * Star generation is ported from Angelica's NotFine {@code RenderStars}.
+ * - a constant modification in Vanilla's star generator that changes only the iteration count.
+ * This preserves both Vanilla's VBO and display-list generation paths.
  */
 @Mixin(RenderGlobal.class)
 public class MixinRenderGlobalStars {
-
-    @Shadow
-    private VertexBuffer starVBO;
-
-    @Shadow
-    private VertexFormat vertexBufferFormat;
 
     /**
      * Control star rendering by wrapping the star brightness calculation.
@@ -44,41 +30,22 @@ public class MixinRenderGlobalStars {
             method = "renderSky(FI)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;getStarBrightness(F)F"
+                    target = "Lnet/minecraft/client/multiplayer/WorldClient;getStarBrightness(F)F"
             )
     )
-    private float wrapGetStarBrightness(World world, float partialTicks, Operation<Float> original) {
+    private float celeritasExtra$getStarBrightness(WorldClient world, float partialTicks,
+                                                    Operation<Float> original) {
         if (!CeleritasExtraClientMod.options().detailSettings.stars) {
             return 0.0f;
         }
         return original.call(world, partialTicks);
     }
 
-    /**
-     * Override star generation to use configurable star count.
-     * Ported from Angelica's NotFine RenderStars.
-     *
-     * @author Celeritas Extra
-     * @reason Configurable star count
-     */
-    @Overwrite
-    private void generateStars() {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-
-        if (this.starVBO != null) {
-            this.starVBO.deleteGlBuffers();
-        }
-
-        this.starVBO = new VertexBuffer(this.vertexBufferFormat);
-
-        buffer.begin(7, DefaultVertexFormats.POSITION);
-
-        int totalStars = CeleritasExtraClientMod.options().detailSettings.totalStars;
-        RenderStars.generateStars(buffer, totalStars);
-
-        buffer.finishDrawing();
-        buffer.reset();
-        this.starVBO.bufferData(buffer.getByteBuffer());
+    @ModifyConstant(
+            method = "renderStars(Lnet/minecraft/client/renderer/BufferBuilder;)V",
+            constant = @Constant(intValue = 1500)
+    )
+    private int celeritasExtra$starCount(int vanillaCount) {
+        return CeleritasExtraClientMod.options().detailSettings.totalStars;
     }
 }

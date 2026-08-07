@@ -1,6 +1,8 @@
 package jp.s12kuma01.celeritasextra.mixin.steady_debug_hud;
 
 import jp.s12kuma01.celeritasextra.client.CeleritasExtraClientMod;
+import net.minecraft.client.gui.GuiOverlayDebug;
+import net.minecraft.client.gui.ScaledResolution;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,13 +19,12 @@ import java.util.List;
  * <p>
  * The vanilla debug screen recomputes every line each frame, which is comparatively expensive.
  * When enabled, this caches the left- and right-hand text lists and only rebuilds them on a fixed
- * interval (default 20 ticks / 1 second), returning the cached lists in between to reduce CPU
+ * interval (default 1 tick / 50 milliseconds), returning the cached lists in between to reduce CPU
  * usage. When the feature is off, the text is rebuilt every frame as in vanilla.
  * <p>
- * In 1.20.1: Forge's ForgeGui$ForgeDebugScreenOverlay
- * In 1.12.2: Forge's GuiIngameForge (debug rendering is built into GuiIngame)
+ * In 1.12.2 the text producers live on Minecraft's {@link GuiOverlayDebug}.
  */
-@Mixin(targets = "net.minecraftforge.client.GuiIngameForge")
+@Mixin(GuiOverlayDebug.class)
 public abstract class MixinForgeGuiDebugOverlay {
 
     @Unique
@@ -31,7 +32,7 @@ public abstract class MixinForgeGuiDebugOverlay {
     @Unique
     private final List<String> celeritasExtra$rightTextCache = new ArrayList<>();
     @Unique
-    private long celeritasExtra$nextTime = 0L;
+    private long celeritasExtra$nextUpdateNanos;
     @Unique
     private boolean celeritasExtra$rebuild = true;
 
@@ -40,16 +41,16 @@ public abstract class MixinForgeGuiDebugOverlay {
      */
     @Inject(
             method = "renderDebugInfo",
-            at = @At("HEAD"),
-            remap = false
+            at = @At("HEAD")
     )
-    private void beforeRenderDebugInfo(int width, CallbackInfo ci) {
+    private void celeritasExtra$beforeRenderDebugInfo(ScaledResolution resolution, CallbackInfo ci) {
         if (CeleritasExtraClientMod.options().extraSettings.steadyDebugHud) {
-            final long currentTime = System.currentTimeMillis();
-            if (currentTime > this.celeritasExtra$nextTime) {
+            long now = System.nanoTime();
+            if (now >= this.celeritasExtra$nextUpdateNanos) {
                 this.celeritasExtra$rebuild = true;
-                this.celeritasExtra$nextTime = currentTime +
-                        (CeleritasExtraClientMod.options().extraSettings.steadyDebugHudRefreshInterval * 50L);
+                this.celeritasExtra$nextUpdateNanos = now
+                        + CeleritasExtraClientMod.options().extraSettings.steadyDebugHudRefreshInterval
+                        * 50_000_000L;
             } else {
                 this.celeritasExtra$rebuild = false;
             }
@@ -62,23 +63,21 @@ public abstract class MixinForgeGuiDebugOverlay {
      * Cache left side debug text
      */
     @Inject(
-            method = "getDebugInfoLeft",
+            method = "call()Ljava/util/List;",
             at = @At("HEAD"),
-            cancellable = true,
-            remap = false
+            cancellable = true
     )
-    private void beforeGetLeftDebugText(CallbackInfoReturnable<List<String>> cir) {
+    private void celeritasExtra$beforeGetLeftDebugText(CallbackInfoReturnable<List<String>> cir) {
         if (!this.celeritasExtra$rebuild) {
             cir.setReturnValue(this.celeritasExtra$leftTextCache);
         }
     }
 
     @Inject(
-            method = "getDebugInfoLeft",
-            at = @At("RETURN"),
-            remap = false
+            method = "call()Ljava/util/List;",
+            at = @At("RETURN")
     )
-    private void afterGetLeftDebugText(CallbackInfoReturnable<List<String>> cir) {
+    private void celeritasExtra$afterGetLeftDebugText(CallbackInfoReturnable<List<String>> cir) {
         if (this.celeritasExtra$rebuild) {
             this.celeritasExtra$leftTextCache.clear();
             this.celeritasExtra$leftTextCache.addAll(cir.getReturnValue());
@@ -89,23 +88,21 @@ public abstract class MixinForgeGuiDebugOverlay {
      * Cache right side debug text
      */
     @Inject(
-            method = "getDebugInfoRight",
+            method = "getDebugInfoRight()Ljava/util/List;",
             at = @At("HEAD"),
-            cancellable = true,
-            remap = false
+            cancellable = true
     )
-    private void beforeGetRightDebugText(CallbackInfoReturnable<List<String>> cir) {
+    private void celeritasExtra$beforeGetRightDebugText(CallbackInfoReturnable<List<String>> cir) {
         if (!this.celeritasExtra$rebuild) {
             cir.setReturnValue(this.celeritasExtra$rightTextCache);
         }
     }
 
     @Inject(
-            method = "getDebugInfoRight",
-            at = @At("RETURN"),
-            remap = false
+            method = "getDebugInfoRight()Ljava/util/List;",
+            at = @At("RETURN")
     )
-    private void afterGetRightDebugText(CallbackInfoReturnable<List<String>> cir) {
+    private void celeritasExtra$afterGetRightDebugText(CallbackInfoReturnable<List<String>> cir) {
         if (this.celeritasExtra$rebuild) {
             this.celeritasExtra$rightTextCache.clear();
             this.celeritasExtra$rightTextCache.addAll(cir.getReturnValue());

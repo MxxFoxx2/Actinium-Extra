@@ -25,7 +25,9 @@ dependencies {
         compileOnly "com.cleanroommc:lwjglx:1.0.0"
     }
 
-    // Celeritas dependency (place Celeritas jar in libs/ directory)
+    // Celeritas compile dependency (place the Celeritas development jar in libs/).
+    // Use a runnable/remapped Celeritas jar in run/client/mods for integration testing; the
+    // development artifact is intentionally not bundled or forced onto the runtime classpath.
     fileTree(dir: 'libs', include: ['*.jar']).each { jar ->
         modCompileOnly files(jar)
     }

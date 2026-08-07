@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 /**
  * Suppresses the distance-based void fog that darkens the view near the world bottom.
  * <p>
- * In 1.12.2 void fog is applied inside {@link EntityRenderer#setupFog} from
+ * In 1.12.2 void fog color is applied inside {@code EntityRenderer.updateFogColor} from
  * {@link WorldProvider#getVoidFogYFactor()}. When void fog is disabled in the detail config this
  * redirect returns {@code 1.0}, which makes the game treat the player as fully above the void and
  * skip the effect; otherwise the real factor is used.
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class MixinEntityRendererVoidFog {
 
     @Redirect(
-            method = "setupFog",
+            method = "updateFogColor(F)V",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/WorldProvider;getVoidFogYFactor()D")
     )

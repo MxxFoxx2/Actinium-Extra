@@ -26,10 +26,11 @@ public class MixinTileEntityRendererDispatcher {
      * Push profiler section before rendering block entity
      */
     @Inject(
-            method = "render(Lnet/minecraft/tileentity/TileEntity;DDDFI)V",
+            method = "render(Lnet/minecraft/tileentity/TileEntity;DDDFIF)V",
             at = @At("HEAD")
     )
-    private void beforeRender(TileEntity tileEntity, double x, double y, double z, float partialTicks, int destroyStage, CallbackInfo ci) {
+    private void beforeRender(TileEntity tileEntity, double x, double y, double z, float partialTicks,
+                              int destroyStage, float alpha, CallbackInfo ci) {
         ProfilerHelper.startSection(tileEntity.getWorld(),
                 TileEntityRendererDispatcher.instance.getRenderer(tileEntity.getClass()));
     }
@@ -38,10 +39,11 @@ public class MixinTileEntityRendererDispatcher {
      * Pop profiler section after rendering block entity
      */
     @Inject(
-            method = "render(Lnet/minecraft/tileentity/TileEntity;DDDFI)V",
+            method = "render(Lnet/minecraft/tileentity/TileEntity;DDDFIF)V",
             at = @At("TAIL")
     )
-    private void afterRender(TileEntity tileEntity, double x, double y, double z, float partialTicks, int destroyStage, CallbackInfo ci) {
+    private void afterRender(TileEntity tileEntity, double x, double y, double z, float partialTicks,
+                             int destroyStage, float alpha, CallbackInfo ci) {
         ProfilerHelper.endSection(tileEntity.getWorld(),
                 TileEntityRendererDispatcher.instance.getRenderer(tileEntity.getClass()));
     }

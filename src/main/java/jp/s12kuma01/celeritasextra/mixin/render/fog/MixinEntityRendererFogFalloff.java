@@ -42,7 +42,7 @@ public class MixinEntityRendererFogFalloff {
 
         // Cloud pass: keep clouds out of fog so extended cloud distance is actually visible.
         if (CloudPassState.inCloudPass && rs.clouds && rs.cloudDistance > 0) {
-            return CloudPassState.cloudFar(rs.cloudDistance, rs.cloudHeight);
+            return CloudPassState.cloudFar(rs.cloudDistance);
         }
 
         // Protect gameplay fog (blindness / water / lava): leave it vanilla.
@@ -77,7 +77,7 @@ public class MixinEntityRendererFogFalloff {
 
         // Cloud pass: end just beyond the cloud-far start (finite, start < end).
         if (CloudPassState.inCloudPass && rs.clouds && rs.cloudDistance > 0) {
-            return CloudPassState.cloudFar(rs.cloudDistance, rs.cloudHeight) + 64.0f;
+            return CloudPassState.cloudFar(rs.cloudDistance) + 64.0f;
         }
 
         // Protect gameplay fog (blindness / water / lava): leave it vanilla.

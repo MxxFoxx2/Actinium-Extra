@@ -77,8 +77,6 @@ public class CeleritasExtraGameOptions {
                     v -> detailSettings.biomeColors = v, () -> detailSettings.biomeColors),
             new BooleanProperty(CAT_DETAIL, "skyColors", true, "Enable/disable biome-based sky colors",
                     v -> detailSettings.skyColors = v, () -> detailSettings.skyColors),
-            new BooleanProperty(CAT_DETAIL, "voidParticles", true, "Enable/disable void particles",
-                    v -> detailSettings.voidParticles = v, () -> detailSettings.voidParticles),
             new BooleanProperty(CAT_DETAIL, "voidFog", true, "Enable/disable void fog",
                     v -> detailSettings.voidFog = v, () -> detailSettings.voidFog),
             // Render settings
@@ -117,7 +115,8 @@ public class CeleritasExtraGameOptions {
                     v -> extraSettings.showCoords = v, () -> extraSettings.showCoords),
             new BooleanProperty(CAT_EXTRA, "ignoreReducedDebugInfo", false, "Ignore reduced debug info gamerule",
                     v -> extraSettings.ignoreReducedDebugInfo = v, () -> extraSettings.ignoreReducedDebugInfo),
-            new BooleanProperty(CAT_EXTRA, "steadyDebugHud", false, "Reduce F3 debug screen update frequency",
+            new BooleanProperty(CAT_EXTRA, "steadyDebugHud", ExtraSettings.STEADY_DEBUG_HUD_DEFAULT,
+                    "Reduce F3 debug screen update frequency",
                     v -> extraSettings.steadyDebugHud = v, () -> extraSettings.steadyDebugHud),
             new BooleanProperty(CAT_EXTRA, "useAdaptiveSync", false, "Enable adaptive VSync (swap interval -1)",
                     v -> extraSettings.useAdaptiveSync = v, () -> extraSettings.useAdaptiveSync),
@@ -139,17 +138,25 @@ public class CeleritasExtraGameOptions {
                     v -> renderSettings.fogStart = v, () -> renderSettings.fogStart),
             new IntProperty(CAT_RENDER, "fogDistance", 0, 0, 32, "Fog distance in chunks (0 = use render distance)",
                     v -> renderSettings.fogDistance = v, () -> renderSettings.fogDistance),
-            new IntProperty(CAT_RENDER, "cloudHeight", 192, 0, 384, "Cloud height",
+            new IntProperty(CAT_RENDER, "cloudHeight", RenderSettings.USE_WORLD_CLOUD_HEIGHT,
+                    RenderSettings.USE_WORLD_CLOUD_HEIGHT, 384,
+                    "Cloud height (-16 = use the current dimension's default)",
                     v -> renderSettings.cloudHeight = v, () -> renderSettings.cloudHeight),
             new IntProperty(CAT_RENDER, "cloudDistance", 0, 0, 128, "Cloud render distance in chunks (0 = use render distance)",
                     v -> renderSettings.cloudDistance = v, () -> renderSettings.cloudDistance),
-            new IntProperty(CAT_RENDER, "cloudScale", 4, 1, 4, "Cloud scale (1 = smallest, 4 = default)",
+            new IntProperty(CAT_RENDER, "cloudScale", RenderSettings.CLOUD_SCALE_VANILLA,
+                    RenderSettings.CLOUD_SCALE_MIN, RenderSettings.CLOUD_SCALE_MAX,
+                    "Cloud scale (1 = 0.25x, 4 = vanilla, 16 = 4.00x)",
                     v -> renderSettings.cloudScale = v, () -> renderSettings.cloudScale),
             new IntProperty(CAT_RENDER, "itemFrameLodDistance", 0, 0, 256, "Item frame LOD distance in blocks (0 = off)",
                     v -> renderSettings.itemFrameLodDistance = v, () -> renderSettings.itemFrameLodDistance),
             new IntProperty(CAT_DETAIL, "totalStars", 1500, 500, 32000, "Number of stars to render",
                     v -> detailSettings.totalStars = v, () -> detailSettings.totalStars),
-            new IntProperty(CAT_EXTRA, "steadyDebugHudRefreshInterval", 20, 1, 60, "F3 debug screen refresh interval in ticks",
+            new IntProperty(CAT_EXTRA, "steadyDebugHudRefreshInterval",
+                    ExtraSettings.STEADY_DEBUG_HUD_REFRESH_DEFAULT,
+                    ExtraSettings.STEADY_DEBUG_HUD_REFRESH_MIN,
+                    ExtraSettings.STEADY_DEBUG_HUD_REFRESH_MAX,
+                    "F3 debug screen refresh interval in ticks",
                     v -> extraSettings.steadyDebugHudRefreshInterval = v, () -> extraSettings.steadyDebugHudRefreshInterval)
     );
     private Configuration config;
@@ -157,8 +164,8 @@ public class CeleritasExtraGameOptions {
     /**
      * Loads options from the given config file, falling back to defaults on any error.
      * <p>
-     * The file is always saved afterwards if Forge marked it changed (for example when missing keys
-     * were added with their default values).
+     * A successful load is saved afterwards when Forge added missing defaults. A failed load returns
+     * a fresh defaults object and deliberately does not persist a partially populated state.
      *
      * @param file the {@code .cfg} file to read
      * @return a fully populated options instance backed by {@code file}
@@ -170,15 +177,16 @@ public class CeleritasExtraGameOptions {
         try {
             options.config.load();
             options.loadFromConfig();
-        } catch (Exception e) {
-            CeleritasExtraMod.LOGGER.error("Could not load config, falling back to defaults!", e);
-        } finally {
             if (options.config.hasChanged()) {
                 options.config.save();
             }
+            return options;
+        } catch (Exception e) {
+            CeleritasExtraMod.LOGGER.error("Could not load config, falling back to defaults!", e);
+            CeleritasExtraGameOptions defaults = new CeleritasExtraGameOptions();
+            defaults.config = options.config;
+            return defaults;
         }
-
-        return options;
     }
 
     /**
@@ -364,8 +372,6 @@ public class CeleritasExtraGameOptions {
         BORDERLESS("celeritasextra.option.screen_mode.borderless"),
         FULLSCREEN("celeritasextra.option.screen_mode.fullscreen");
 
-        private static ScreenMode current = null;
-
         private final String translationKey;
 
         ScreenMode(String translationKey) {
@@ -377,20 +383,14 @@ public class CeleritasExtraGameOptions {
         }
 
         /**
-         * Gets the current screen mode. Uses cached state to avoid timing issues with mc.isFullScreen().
+         * Gets the current screen mode from the live display state.
          */
         public static ScreenMode getCurrent(CeleritasExtraGameOptions opts) {
-            if (current == null) {
-                var mc = Minecraft.getMinecraft();
-                if (!mc.isFullScreen()) {
-                    current = WINDOWED;
-                } else if (ForgeEarlyConfig.WINDOW_BORDERLESS_REPLACES_FULLSCREEN) {
-                    current = BORDERLESS;
-                } else {
-                    current = FULLSCREEN;
-                }
+            if (Display.isBorderless()) {
+                return BORDERLESS;
             }
-            return current;
+            Minecraft minecraft = Minecraft.getMinecraft();
+            return Display.isFullscreen() || minecraft.isFullScreen() ? FULLSCREEN : WINDOWED;
         }
 
         /**
@@ -399,8 +399,6 @@ public class CeleritasExtraGameOptions {
         public static void apply(CeleritasExtraGameOptions opts, ScreenMode mode) {
             var mc = Minecraft.getMinecraft();
             var previous = getCurrent(opts);
-            current = mode;
-
             if (previous == mode) return;
 
             if (previous != WINDOWED) {
@@ -418,6 +416,7 @@ public class CeleritasExtraGameOptions {
                     mc.toggleFullscreen();
                 }
             }
+            mc.gameSettings.saveOptions();
         }
     }
 
@@ -469,7 +468,7 @@ public class CeleritasExtraGameOptions {
 
     /**
      * Toggles for celestial and environmental detail rendering (sky, stars, sun/moon, weather, biome
-     * and sky colors, void particles and fog) plus the {@code totalStars} count.
+     * and sky colors, and void fog) plus the {@code totalStars} count.
      */
     public static class DetailSettings {
         public boolean sky = true;
@@ -478,7 +477,6 @@ public class CeleritasExtraGameOptions {
         public boolean rainSnow = true;
         public boolean biomeColors = true;
         public boolean skyColors = true;
-        public boolean voidParticles = true;
         public boolean voidFog = true;
         public int totalStars = 1500;
     }
@@ -489,14 +487,21 @@ public class CeleritasExtraGameOptions {
      * paintings, pistons, and beacon beams.
      */
     public static class RenderSettings {
+        /** Slider sentinel meaning "preserve WorldProvider#getCloudHeight()". */
+        public static final int USE_WORLD_CLOUD_HEIGHT = -16;
+        public static final int CLOUD_SCALE_MIN = 1;
+        /** Internal scale value corresponding to the vanilla 1.00x cloud size. */
+        public static final int CLOUD_SCALE_VANILLA = 4;
+        public static final int CLOUD_SCALE_MAX = 16;
+
         public boolean fog = true;
         public int fogStart = 100;
         public int fogDistance = 0;
         public boolean clouds = true;
-        public int cloudHeight = 192;
+        public int cloudHeight = USE_WORLD_CLOUD_HEIGHT;
         public int cloudDistance = 0;
         public CloudTranslucency cloudTranslucency = CloudTranslucency.DEFAULT;
-        public int cloudScale = 4;
+        public int cloudScale = CLOUD_SCALE_VANILLA;
         public boolean lightUpdates = true;
         public boolean itemFrames = true;
         public int itemFrameLodDistance = 0;
@@ -517,6 +522,11 @@ public class CeleritasExtraGameOptions {
      * mod-name tooltip.
      */
     public static class ExtraSettings {
+        public static final boolean STEADY_DEBUG_HUD_DEFAULT = true;
+        public static final int STEADY_DEBUG_HUD_REFRESH_MIN = 1;
+        public static final int STEADY_DEBUG_HUD_REFRESH_DEFAULT = 1;
+        public static final int STEADY_DEBUG_HUD_REFRESH_MAX = 20;
+
         public boolean showFps = false;
         public boolean showFPSExtended = true;
         public boolean showCoords = false;
@@ -524,8 +534,8 @@ public class CeleritasExtraGameOptions {
         public boolean useAdaptiveSync = false;
         public OverlayCorner overlayCorner = OverlayCorner.TOP_LEFT;
         public TextContrast textContrast = TextContrast.SHADOW;
-        public boolean steadyDebugHud = false;
-        public int steadyDebugHudRefreshInterval = 20;
+        public boolean steadyDebugHud = STEADY_DEBUG_HUD_DEFAULT;
+        public int steadyDebugHudRefreshInterval = STEADY_DEBUG_HUD_REFRESH_DEFAULT;
         public boolean toasts = true;
         public boolean toastAdvancement = true;
         public boolean toastRecipe = true;

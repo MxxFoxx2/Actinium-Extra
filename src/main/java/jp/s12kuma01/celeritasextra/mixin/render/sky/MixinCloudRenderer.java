@@ -2,6 +2,7 @@ package jp.s12kuma01.celeritasextra.mixin.render.sky;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import jp.s12kuma01.celeritasextra.client.CeleritasExtraClientMod;
+import jp.s12kuma01.celeritasextra.client.gui.CeleritasExtraGameOptions.RenderSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.CloudRenderer;
 import org.objectweb.asm.Opcodes;
@@ -19,12 +20,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Cloud Distance: Two @Redirects decouple the dirty-check from geometry extent.
  * Cloud Scale: @ModifyReturnValue on getScale() (XZ tiling scale).
  * <p>
- * Scale values (1-4, default 4):
+ * Scale values use quarter steps from 1-16 (default 4):
  * <ul>
  *   <li>1 = 0.25x (smallest clouds)</li>
- *   <li>2 = 0.5x</li>
- *   <li>3 = 0.75x</li>
  *   <li>4 = 1.0x (vanilla, default)</li>
+ *   <li>16 = 4.0x (largest clouds)</li>
  * </ul>
  */
 @Mixin(value = CloudRenderer.class, remap = false)
@@ -105,6 +105,6 @@ public class MixinCloudRenderer {
     @ModifyReturnValue(method = "getScale", at = @At("RETURN"))
     private int celeritasExtra$scaleClouds(int original) {
         int cloudScale = CeleritasExtraClientMod.options().renderSettings.cloudScale;
-        return Math.max(1, original * cloudScale / 4);
+        return Math.max(1, original * cloudScale / RenderSettings.CLOUD_SCALE_VANILLA);
     }
 }

@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Controls item frame rendering, name tags, and level-of-detail culling via {@link RenderItemFrame}.
@@ -43,17 +42,17 @@ public class MixinRenderItemFrame {
     }
 
     /**
-     * Controls item frame name tag rendering
-     * In 1.12.2, RenderItemFrame inherits from Render which has canRenderName method
+     * Controls the custom name rendered for the item displayed in an item frame.
      */
     @Inject(
-            method = "canRenderName(Lnet/minecraft/entity/item/EntityItemFrame;)Z",
+            method = "renderName(Lnet/minecraft/entity/item/EntityItemFrame;DDD)V",
             at = @At("HEAD"),
             cancellable = true
     )
-    protected void canRenderName(EntityItemFrame entity, CallbackInfoReturnable<Boolean> cir) {
+    private void celeritasExtra$renderName(EntityItemFrame entity, double x, double y, double z,
+                                           CallbackInfo ci) {
         if (!CeleritasExtraClientMod.options().renderSettings.itemFrameNameTag) {
-            cir.setReturnValue(false);
+            ci.cancel();
         }
     }
 

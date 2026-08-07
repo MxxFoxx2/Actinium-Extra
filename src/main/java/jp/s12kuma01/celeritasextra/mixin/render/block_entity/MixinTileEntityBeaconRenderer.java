@@ -3,12 +3,12 @@ package jp.s12kuma01.celeritasextra.mixin.render.block_entity;
 import jp.s12kuma01.celeritasextra.client.CeleritasExtraClientMod;
 import net.minecraft.client.renderer.tileentity.TileEntityBeaconRenderer;
 import net.minecraft.tileentity.TileEntityBeacon;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
@@ -18,52 +18,69 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Two behaviors, each gated by a render setting:
  * - {@code beacons}: cancels {@code render} at HEAD to skip the beacon and its beam entirely.
  * - {@code limitBeaconBeamHeight}: clamps the beam so it stops at the world ceiling instead of
- * extending the vanilla default (256 blocks above the beacon), avoiding an over-long beam that
- * draws past the top of the world.
+ * allowing its final segment to draw past the top of the world.
  */
 @Mixin(TileEntityBeaconRenderer.class)
 public class MixinTileEntityBeaconRenderer {
 
-    private static TileEntityBeacon currentBeacon;
+    @Unique
+    private TileEntityBeacon celeritasExtra$currentBeacon;
 
     @Inject(
             method = "render(Lnet/minecraft/tileentity/TileEntityBeacon;DDDFIF)V",
             at = @At("HEAD"),
             cancellable = true
     )
-    public void onRenderHead(TileEntityBeacon te, double x, double y, double z, float partialTicks, int destroyStage, float alpha, CallbackInfo ci) {
+    private void celeritasExtra$beginRender(TileEntityBeacon te, double x, double y, double z,
+                                            float partialTicks, int destroyStage, float alpha,
+                                            CallbackInfo ci) {
+        this.celeritasExtra$currentBeacon = null;
         if (!CeleritasExtraClientMod.options().renderSettings.beacons) {
             ci.cancel();
             return;
         }
-        currentBeacon = te;
+        this.celeritasExtra$currentBeacon = te;
+    }
+
+    @Inject(
+            method = "render(Lnet/minecraft/tileentity/TileEntityBeacon;DDDFIF)V",
+            at = @At("RETURN")
+    )
+    private void celeritasExtra$endRender(TileEntityBeacon te, double x, double y, double z,
+                                          float partialTicks, int destroyStage, float alpha,
+                                          CallbackInfo ci) {
+        this.celeritasExtra$currentBeacon = null;
     }
 
     /**
-     * Modifies the beam height (j1 variable which represents maxY - 256 typically)
-     * when limitBeaconBeamHeight is enabled.
-     * In 1.12.2, the beacon beam renders from the beacon position up to j1 (typically 256).
-     * We modify this to limit it to the world height instead.
+     * Clamp each segment at the real world ceiling. The 1.12 renderer has no local "beam height"
+     * variable in {@code render}; it forwards a list of segments to {@code renderBeacon}. Wrapping
+     * the segment draw therefore targets the value that is actually consumed and also accounts for
+     * the accumulated height of earlier segments.
      */
-    @ModifyVariable(
-            method = "render(Lnet/minecraft/tileentity/TileEntityBeacon;DDDFIF)V",
-            at = @At(value = "STORE"),
-            ordinal = 1  // j1 is the second int variable (height)
+    @WrapOperation(
+            method = "renderBeacon(DDDDDLjava/util/List;D)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/tileentity/TileEntityBeaconRenderer;renderBeamSegment(DDDDDDII[F)V"
+            )
     )
-    private int modifyBeamHeight(int originalHeight) {
-        if (!CeleritasExtraClientMod.options().renderSettings.limitBeaconBeamHeight) {
-            return originalHeight;
+    private void celeritasExtra$limitBeamSegment(double x, double y, double z,
+                                                  double partialTicks, double beamScale,
+                                                  double worldTime, int segmentStart,
+                                                  int segmentHeight, float[] colors,
+                                                  Operation<Void> original) {
+        TileEntityBeacon beacon = this.celeritasExtra$currentBeacon;
+        if (CeleritasExtraClientMod.options().renderSettings.limitBeaconBeamHeight
+                && beacon != null && beacon.getWorld() != null) {
+            int remainingHeight = beacon.getWorld().getHeight()
+                    - beacon.getPos().getY() - segmentStart;
+            segmentHeight = Math.min(segmentHeight, Math.max(0, remainingHeight));
         }
 
-        if (currentBeacon != null && currentBeacon.getWorld() != null) {
-            World world = currentBeacon.getWorld();
-            BlockPos pos = currentBeacon.getPos();
-            // Limit beam to world height (256 in 1.12.2) minus beacon Y position
-            int worldHeight = world.getHeight();
-            int beaconY = pos.getY();
-            int limitedHeight = worldHeight - beaconY;
-            return Math.min(originalHeight, limitedHeight);
+        if (segmentHeight > 0) {
+            original.call(x, y, z, partialTicks, beamScale, worldTime,
+                    segmentStart, segmentHeight, colors);
         }
-        return originalHeight;
     }
 }

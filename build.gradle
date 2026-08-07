@@ -2,9 +2,9 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'com.gradleup.shadow' version '9.4.0'
+    id 'com.gradleup.shadow' version '9.5.1'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.4.1'
-    id 'xyz.wagyourtail.unimined' version '1.4.23-kappa'
+    id 'xyz.wagyourtail.unimined' version '1.4.26-kappa'
     id 'net.kyori.blossom' version '2.2.0'
 }
 
@@ -26,6 +26,7 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
     }
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_25
     if (generate_sources_jar.toBoolean()) {
         withSourcesJar()
     }
@@ -57,13 +58,13 @@ unimined.minecraft {
         if (use_access_transformer.toBoolean()) {
             accessTransformer "${rootProject.projectDir}/src/main/resources/$access_transformer_locations"
         }
-        loader "0.5.0-alpha"
+        loader "0.6.0-alpha"
         runs.auth.username = minecraft_username
         runs.all {
             systemProperty("crl.dev.mixin", "${mod_id}.default.mixin.json")
             def extraArgs = extra_jvm_args
             if (extraArgs != null && !extraArgs.trim().isEmpty()) {
-                jvmArgs += extraArgs.split { "\\s+" }.toList()
+                jvmArgs += extraArgs.trim().split(/\s+/).toList()
             }
             if (enable_foundation_debug.toBoolean()) {
                 systemProperty("foundation.dump", "true")
@@ -80,7 +81,14 @@ unimined.minecraft {
 
     String jarTaskName = enable_shadow.toBoolean() ? "shadowJar" : "jar"
 
-    remap(tasks.named(jarTaskName).get())
+    remap(tasks.named(jarTaskName).get()) {
+        // Keep both the standard Mixin and MixinExtras remappers enabled. The latter
+        // is required for selectors used by injectors such as @WrapOperation.
+        mixinRemap {
+            enableBaseMixin()
+            enableMixinExtra()
+        }
+    }
 
     mods {
         remap(configurations.modCompileOnly)
@@ -161,10 +169,6 @@ if (!enable_shadow.toBoolean()) {
     shadowJar.enabled = false
 }
 
-compileJava {
-    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_25
-}
-
 jar {
     archiveClassifier = 'dev'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -212,10 +216,6 @@ tasks.named(remapTaskName).configure {
     doLast {
         logging.captureStandardOutput LogLevel.QUIET
     }
-}
-
-compileTestJava {
-    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_25
 }
 
 test {

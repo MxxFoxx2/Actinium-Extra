@@ -48,8 +48,6 @@ celeritasextra.option.details.biome_colors=Цвета Биомов
 celeritasextra.option.details.biome_colors.tooltip=Если этот параметр включен, цвета изменяются в зависимости от биома.
 celeritasextra.option.details.sky_colors=Цвета неба
 celeritasextra.option.details.sky_colors.tooltip=Применяет цвет неба в зависимости от биома.
-celeritasextra.option.details.void_particles=Частицы Пустоты
-celeritasextra.option.details.void_particles.tooltip=Если этот параметр включен, частицы пустоты отображаются под миром.
 celeritasextra.option.details.void_fog=Туман Пустоты
 celeritasextra.option.details.void_fog.tooltip=Если этот параметр включен, туман пустоты отображается под миром.
 
@@ -69,7 +67,7 @@ celeritasextra.option.render.cloud_height.tooltip=Управляет высот�
 celeritasextra.option.render.cloud_distance=Дистанция облаков
 celeritasextra.option.render.cloud_distance.tooltip=Контролирует дистанцию рендеринга облаков в чанках. 0 = По умолчанию (использует дистанцию рендеринга).
 celeritasextra.option.render.cloud_scale=Масштаб Облаков
-celeritasextra.option.render.cloud_scale.tooltip=Контролирует размер облаков. 1 = наименьший, 4 = по умолчанию (ванильный).
+celeritasextra.option.render.cloud_scale.tooltip=Управляет размером облаков от 0,25x до 4,00x. 1,00x — стандартный размер ванильной игры.
 celeritasextra.option.render.cloud_translucency=Прозрачность Облаков
 celeritasextra.option.render.cloud_translucency.tooltip=Контролирует, когда облака становятся полупрозрачными. По умолчанию: на основе высоты облаков. Всегда: всегда полупрозрачные. Никогда: всегда непрозрачные.
 celeritasextra.option.cloud_translucency.default=По умолчанию

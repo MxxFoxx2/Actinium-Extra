@@ -17,6 +17,16 @@ import java.io.File;
 public class CeleritasExtraClientMod {
 
     private static CeleritasExtraGameOptions CONFIG;
+    private static File configDirectory = new File("config");
+
+    /**
+     * Supplies Forge's canonical configuration directory before the options are loaded.
+     */
+    private static void setConfigDirectory(File directory) {
+        if (directory != null && CONFIG == null) {
+            configDirectory = directory;
+        }
+    }
 
     /**
      * Returns the mod's client options, loading and caching them on first access.
@@ -37,19 +47,21 @@ public class CeleritasExtraClientMod {
      * @return the freshly loaded {@link CeleritasExtraGameOptions}
      */
     private static CeleritasExtraGameOptions loadConfig() {
-        File configDir = new File("config");
-        if (!configDir.exists()) {
-            configDir.mkdirs();
+        if (!configDirectory.isDirectory() && !configDirectory.mkdirs()) {
+            CeleritasExtraMod.LOGGER.warn("Could not create config directory: {}", configDirectory);
         }
-        File configFile = new File(configDir, "celeritas-extra.cfg");
+        File configFile = new File(configDirectory, "celeritas-extra.cfg");
         return CeleritasExtraGameOptions.load(configFile);
     }
 
     /**
      * Initializes the client by eagerly loading the config; called during mod init.
+     *
+     * @param directory Forge's canonical configuration directory
      */
-    public static void onClientInit() {
+    public static void onClientInit(File directory) {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+            setConfigDirectory(directory);
             CeleritasExtraMod.LOGGER.info("Initializing Celeritas Extra client...");
             options();
         }

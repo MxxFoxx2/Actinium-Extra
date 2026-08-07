@@ -56,7 +56,7 @@ public class MixinEntityRendererCloudPass {
     private float celeritasExtra$widenCloudFarPlane(float original) {
         CeleritasExtraGameOptions.RenderSettings rs = CeleritasExtraClientMod.options().renderSettings;
         if (rs.clouds && rs.cloudDistance > 0) {
-            return Math.max(original, CloudPassState.cloudFar(rs.cloudDistance, rs.cloudHeight) + 128.0F);
+            return Math.max(original, CloudPassState.cloudFar(rs.cloudDistance) + 128.0F);
         }
         return original;
     }

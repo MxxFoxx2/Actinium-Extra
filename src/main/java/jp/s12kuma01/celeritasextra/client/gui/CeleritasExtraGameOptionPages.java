@@ -177,6 +177,19 @@ public class CeleritasExtraGameOptionPages {
             Function<CeleritasExtraGameOptions, Integer> getter,
             BooleanSupplier enabled,
             OptionImpact impact) {
+        return sliderOption(translationKey, min, max, step, formatter, setter, getter,
+                enabled, impact, null);
+    }
+
+    private static OptionImpl<CeleritasExtraGameOptions, Integer> sliderOption(
+            String translationKey,
+            int min, int max, int step,
+            ControlValueFormatter formatter,
+            BiConsumer<CeleritasExtraGameOptions, Integer> setter,
+            Function<CeleritasExtraGameOptions, Integer> getter,
+            BooleanSupplier enabled,
+            OptionImpact impact,
+            OptionFlag flag) {
         var builder = OptionImpl.createBuilder(int.class, celeritasExtraOpts)
                 .setName(TextComponent.literal(I18n.format(translationKey)))
                 .setTooltip(TextComponent.literal(I18n.format(translationKey + ".tooltip")))
@@ -184,6 +197,7 @@ public class CeleritasExtraGameOptionPages {
                 .setBinding(setter, getter);
         if (enabled != null) builder.setEnabledPredicate(enabled);
         if (impact != null) builder.setImpact(impact);
+        if (flag != null) builder.setFlags(flag);
         return builder.build();
     }
 
@@ -348,7 +362,7 @@ public class CeleritasExtraGameOptionPages {
                         500, 32000, 500, ControlValueFormatter.number(),
                         (opts, v) -> opts.detailSettings.totalStars = v,
                         opts -> opts.detailSettings.totalStars,
-                        starsOn, OptionImpact.MEDIUM))
+                        starsOn, OptionImpact.MEDIUM, OptionFlag.REQUIRES_RENDERER_RELOAD))
                 .add(booleanOption("celeritasextra.option.details.sun_moon",
                         (opts, v) -> opts.detailSettings.sunMoon = v,
                         opts -> opts.detailSettings.sunMoon,
@@ -363,9 +377,6 @@ public class CeleritasExtraGameOptionPages {
                 .add(booleanOption("celeritasextra.option.details.sky_colors",
                         (opts, v) -> opts.detailSettings.skyColors = v,
                         opts -> opts.detailSettings.skyColors))
-                .add(booleanOption("celeritasextra.option.details.void_particles",
-                        (opts, v) -> opts.detailSettings.voidParticles = v,
-                        opts -> opts.detailSettings.voidParticles))
                 .add(booleanOption("celeritasextra.option.details.void_fog",
                         (opts, v) -> opts.detailSettings.voidFog = v,
                         opts -> opts.detailSettings.voidFog))
@@ -420,7 +431,8 @@ public class CeleritasExtraGameOptionPages {
                         opts -> opts.renderSettings.preventShaders))
                 .add(cloudsOption)
                 .add(sliderOption("celeritasextra.option.render.cloud_height",
-                        0, 384, 16, v -> TextComponent.literal(v + " blocks"),
+                        CeleritasExtraGameOptions.RenderSettings.USE_WORLD_CLOUD_HEIGHT, 384, 16,
+                        v -> TextComponent.literal(v < 0 ? "Default" : v + " blocks"),
                         (opts, v) -> opts.renderSettings.cloudHeight = v,
                         opts -> opts.renderSettings.cloudHeight,
                         cloudsOn))
@@ -430,7 +442,10 @@ public class CeleritasExtraGameOptionPages {
                         opts -> opts.renderSettings.cloudDistance,
                         cloudsOn, OptionImpact.HIGH))
                 .add(sliderOption("celeritasextra.option.render.cloud_scale",
-                        1, 4, 1, v -> TextComponent.literal(String.format(Locale.ROOT, "%.2fx", v / 4.0f)),
+                        CeleritasExtraGameOptions.RenderSettings.CLOUD_SCALE_MIN,
+                        CeleritasExtraGameOptions.RenderSettings.CLOUD_SCALE_MAX,
+                        1, v -> TextComponent.literal(String.format(Locale.ROOT, "%.2fx",
+                                (float) v / CeleritasExtraGameOptions.RenderSettings.CLOUD_SCALE_VANILLA)),
                         (opts, v) -> opts.renderSettings.cloudScale = v,
                         opts -> opts.renderSettings.cloudScale,
                         cloudsOn))
@@ -552,7 +567,9 @@ public class CeleritasExtraGameOptionPages {
                         opts -> opts.extraSettings.modNameTooltip))
                 .add(steadyHudOption)
                 .add(sliderOption("celeritasextra.option.extra.steady_debug_hud_refresh",
-                        1, 60, 1, v -> TextComponent.literal(v + " ticks"),
+                        CeleritasExtraGameOptions.ExtraSettings.STEADY_DEBUG_HUD_REFRESH_MIN,
+                        CeleritasExtraGameOptions.ExtraSettings.STEADY_DEBUG_HUD_REFRESH_MAX,
+                        1, v -> TextComponent.literal(v + (v == 1 ? " tick" : " ticks")),
                         (opts, v) -> opts.extraSettings.steadyDebugHudRefreshInterval = v,
                         opts -> opts.extraSettings.steadyDebugHudRefreshInterval,
                         steadyHudOn))
