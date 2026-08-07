@@ -121,8 +121,6 @@ public class CeleritasExtraGameOptions {
                     v -> extraSettings.steadyDebugHud = v, () -> extraSettings.steadyDebugHud),
             new BooleanProperty(CAT_EXTRA, "useAdaptiveSync", false, "Enable adaptive VSync (swap interval -1)",
                     v -> extraSettings.useAdaptiveSync = v, () -> extraSettings.useAdaptiveSync),
-            new BooleanProperty(CAT_EXTRA, "hideHeiUntilSearch", false, "Hide HEI item list until searching",
-                    v -> extraSettings.hideHeiUntilSearch = v, () -> extraSettings.hideHeiUntilSearch),
             new BooleanProperty(CAT_EXTRA, "toasts", true, "Master toggle for toast pop-ups",
                     v -> extraSettings.toasts = v, () -> extraSettings.toasts),
             new BooleanProperty(CAT_EXTRA, "toastAdvancement", true, "Show advancement toasts",
@@ -515,8 +513,8 @@ public class CeleritasExtraGameOptions {
 
     /**
      * Miscellaneous quality-of-life settings: the FPS/coordinate overlay with its placement and
-     * contrast, accessibility options (adaptive vsync, steady debug HUD), toast
-     * toggles, the HEI search gate, and the mod-name tooltip.
+     * contrast, accessibility options (adaptive vsync, steady debug HUD), toast toggles, and the
+     * mod-name tooltip.
      */
     public static class ExtraSettings {
         public boolean showFps = false;
@@ -528,7 +526,6 @@ public class CeleritasExtraGameOptions {
         public TextContrast textContrast = TextContrast.SHADOW;
         public boolean steadyDebugHud = false;
         public int steadyDebugHudRefreshInterval = 20;
-        public boolean hideHeiUntilSearch = false;
         public boolean toasts = true;
         public boolean toastAdvancement = true;
         public boolean toastRecipe = true;

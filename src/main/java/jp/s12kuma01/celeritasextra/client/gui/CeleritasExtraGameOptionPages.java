@@ -488,7 +488,7 @@ public class CeleritasExtraGameOptionPages {
 
     /**
      * Builds the Extra page: the FPS/coordinate overlay group, miscellaneous quality-of-life
-     * settings, toast toggles, and the HEI search gate (added only when JEI/HEI is loaded).
+     * settings, and toast toggles.
      *
      * @return the assembled extra option page
      */
@@ -582,15 +582,6 @@ public class CeleritasExtraGameOptionPages {
                         (opts, v) -> opts.extraSettings.toastSystem = v,
                         opts -> opts.extraSettings.toastSystem,
                         toastsOn))
-                .build());
-
-        // HEI-specific options (only shown when HEI is installed)
-        groups.add(OptionGroup.createBuilder()
-                .addConditionally(
-                        net.minecraftforge.fml.common.Loader.isModLoaded("jei"),
-                        () -> booleanOption("celeritasextra.option.extra.hide_hei",
-                                (opts, v) -> opts.extraSettings.hideHeiUntilSearch = v,
-                                opts -> opts.extraSettings.hideHeiUntilSearch))
                 .build());
 
         return new OptionPage(CeleritasExtraOptionPages.EXTRA, TextComponent.literal(I18n.format("celeritasextra.option.page.extra")), ImmutableList.copyOf(groups));

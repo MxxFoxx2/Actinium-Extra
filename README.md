@@ -51,8 +51,6 @@ Toggle **sky, stars** (with an adjustable star count), **sun & moon, rain & snow
 - **Toasts** — master toggle plus per-type control (advancement, recipe, tutorial, system).
 - **Steady Debug HUD** — refresh the F3 screen on a fixed tick interval instead of every frame.
 - **F3 profiler sections** — labels entity and block-entity renderers as sections in the debug profiler pie chart (F3), to help spot render bottlenecks.
-- **Hide HEI Until Searching** — keeps the HEI item list hidden until you type in the search bar *(only available when HEI is installed)*.
-
 ### Window
 - **Screen Mode** — Windowed / Borderless / Fullscreen (replaces the vanilla fullscreen toggle).
 - **VSync** — Off / On / Adaptive (replaces the vanilla VSync toggle).
