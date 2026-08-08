@@ -1,6 +1,7 @@
 package jp.s12kuma01.celeritasextra;
 
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -25,7 +26,8 @@ import java.io.File;
  */
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
         clientSideOnly = true, acceptableRemoteVersions = "*",
-        dependencies = "required-after:cleanroom@[0.6.0-alpha,);required-after:celeritas")
+        dependencies = "required-after:cleanroom@[0.6.0-alpha,);required-after:celeritas;"
+                + "after:assetmover@[2.5,)")
 public class CeleritasExtraMod {
 
     public static final Logger LOGGER = LogManager.getLogger(Reference.MOD_NAME);
@@ -46,6 +48,19 @@ public class CeleritasExtraMod {
      */
     @Mod.EventHandler
     public void construct(FMLConstructionEvent event) {
+        if (Loader.isModLoaded("assetmover")) {
+            try {
+                jp.s12kuma01.celeritasextra.compat.assetmover.AssetMoverCompat
+                        .registerModernCloudTexture();
+                LOGGER.info("Requested the Minecraft 1.21.6 cloud texture through AssetMover");
+            } catch (RuntimeException | LinkageError throwable) {
+                LOGGER.error("AssetMover integration failed; Modern Clouds will remain unavailable",
+                        throwable);
+            }
+        } else {
+            LOGGER.info("AssetMover is not installed; Modern Clouds will remain unavailable");
+        }
+
         OptionGUIConstructionEvent.BUS.addListener(jp.s12kuma01.celeritasextra.client.gui.CeleritasExtraOptionsListener::onCeleritasOptionsConstruct);
         OptionGroupConstructionEvent.BUS.addListener(jp.s12kuma01.celeritasextra.client.gui.CeleritasExtraOptionsListener::onOptionGroupConstruct);
         LOGGER.info("Successfully registered Celeritas Extra with Celeritas GUI");

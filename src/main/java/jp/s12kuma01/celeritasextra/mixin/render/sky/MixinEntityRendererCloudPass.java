@@ -3,6 +3,7 @@ package jp.s12kuma01.celeritasextra.mixin.render.sky;
 import jp.s12kuma01.celeritasextra.client.CeleritasExtraClientMod;
 import jp.s12kuma01.celeritasextra.client.CloudPassState;
 import jp.s12kuma01.celeritasextra.client.gui.CeleritasExtraGameOptions;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
 import org.spongepowered.asm.mixin.Mixin;
@@ -55,8 +56,13 @@ public class MixinEntityRendererCloudPass {
     )
     private float celeritasExtra$widenCloudFarPlane(float original) {
         CeleritasExtraGameOptions.RenderSettings rs = CeleritasExtraClientMod.options().renderSettings;
-        if (rs.clouds && rs.cloudDistance > 0) {
-            return Math.max(original, CloudPassState.cloudFar(rs.cloudDistance) + 128.0F);
+        if (rs.clouds && (rs.cloudDistance > 0
+                || CloudPassState.usesModernCloudRenderer(rs))) {
+            int distance = CloudPassState.effectiveCloudDistanceChunks(
+                    rs, Minecraft.getMinecraft().gameSettings.renderDistanceChunks);
+            boolean modernVolume = CloudPassState.usesModernCloudRenderer(rs);
+            return Math.max(original,
+                    CloudPassState.cloudFar(distance, rs.cloudScale, modernVolume) + 128.0F);
         }
         return original;
     }

@@ -3,6 +3,7 @@ package jp.s12kuma01.celeritasextra.client.gui;
 import com.google.common.collect.ImmutableList;
 import jp.s12kuma01.celeritasextra.CeleritasExtraMod;
 import jp.s12kuma01.celeritasextra.client.particle.ParticleClassRegistry;
+import jp.s12kuma01.celeritasextra.client.render.cloud.ModernCloudAssets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import org.embeddedt.embeddium.impl.gui.framework.TextComponent;
@@ -83,6 +84,18 @@ public class CeleritasExtraGameOptionPages {
             Function<CeleritasExtraGameOptions, Boolean> getter,
             BooleanSupplier enabled) {
         return booleanOption(translationKey, setter, getter, null, null, enabled);
+    }
+
+    /**
+     * Enable-gated toggle carrying a performance-impact hint.
+     */
+    private static OptionImpl<CeleritasExtraGameOptions, Boolean> booleanOption(
+            String translationKey,
+            BiConsumer<CeleritasExtraGameOptions, Boolean> setter,
+            Function<CeleritasExtraGameOptions, Boolean> getter,
+            OptionImpact impact,
+            BooleanSupplier enabled) {
+        return booleanOption(translationKey, setter, getter, null, impact, enabled);
     }
 
     /**
@@ -404,6 +417,13 @@ public class CeleritasExtraGameOptionPages {
                 opts -> opts.renderSettings.clouds);
         BooleanSupplier cloudsOn = () -> cloudsOption.getValue();
 
+        OptionImpl<CeleritasExtraGameOptions, Boolean> modernCloudsOption = booleanOption(
+                "celeritasextra.option.render.modern_clouds",
+                (opts, v) -> opts.renderSettings.modernClouds = v,
+                opts -> opts.renderSettings.modernClouds,
+                OptionImpact.HIGH,
+                () -> cloudsOn.getAsBoolean() && ModernCloudAssets.isAvailable());
+
         OptionImpl<CeleritasExtraGameOptions, Boolean> beaconsOption = booleanOption("celeritasextra.option.render.beacons",
                 (opts, v) -> opts.renderSettings.beacons = v,
                 opts -> opts.renderSettings.beacons);
@@ -430,6 +450,7 @@ public class CeleritasExtraGameOptionPages {
                         (opts, v) -> opts.renderSettings.preventShaders = v,
                         opts -> opts.renderSettings.preventShaders))
                 .add(cloudsOption)
+                .add(modernCloudsOption)
                 .add(sliderOption("celeritasextra.option.render.cloud_height",
                         CeleritasExtraGameOptions.RenderSettings.USE_WORLD_CLOUD_HEIGHT, 384, 16,
                         v -> TextComponent.literal(v < 0 ? "Default" : v + " blocks"),

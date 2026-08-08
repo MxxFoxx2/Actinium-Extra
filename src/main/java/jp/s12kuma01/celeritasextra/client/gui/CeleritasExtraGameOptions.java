@@ -84,6 +84,9 @@ public class CeleritasExtraGameOptions {
                     v -> renderSettings.fog = v, () -> renderSettings.fog),
             new BooleanProperty(CAT_RENDER, "clouds", true, "Enable/disable cloud rendering",
                     v -> renderSettings.clouds = v, () -> renderSettings.clouds),
+            new BooleanProperty(CAT_RENDER, "modernClouds", false,
+                    "Use Minecraft 1.21.6-style clouds (requires AssetMover 2.5)",
+                    v -> renderSettings.modernClouds = v, () -> renderSettings.modernClouds),
             new BooleanProperty(CAT_RENDER, "lightUpdates", true, "Enable/disable light updates",
                     v -> renderSettings.lightUpdates = v, () -> renderSettings.lightUpdates),
             new BooleanProperty(CAT_RENDER, "itemFrames", true, "Enable/disable item frame rendering",
@@ -498,6 +501,7 @@ public class CeleritasExtraGameOptions {
         public int fogStart = 100;
         public int fogDistance = 0;
         public boolean clouds = true;
+        public boolean modernClouds = false;
         public int cloudHeight = USE_WORLD_CLOUD_HEIGHT;
         public int cloudDistance = 0;
         public CloudTranslucency cloudTranslucency = CloudTranslucency.DEFAULT;
