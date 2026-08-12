@@ -1,8 +1,8 @@
 # Celeritas Extra
 
-Celeritas Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases) on Minecraft 1.12.2. It adds more graphics, particle, HUD, and window settings to the Celeritas video settings screen.
+Celeritas Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases), built to run on Cleanroom. It adds more graphics, particle, HUD, and window settings to the Celeritas video settings screen.
 
-The mod started as a port of features from Sodium Extra and Rubidium/Embeddium Extra. It also includes several additions and backports made specifically for the Cleanroom 1.12.2 environment.
+The mod started as a port of features from Sodium Extra and Rubidium/Embeddium Extra. It also includes several additions and backports made specifically for the Cleanroom environment.
 
 ## Requirements
 
