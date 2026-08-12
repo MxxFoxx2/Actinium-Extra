@@ -6,7 +6,7 @@ The mod started as a port of features from Sodium Extra and Rubidium/Embeddium E
 
 ## Requirements
 
-- [Cleanroom Loader](https://github.com/CleanroomMC/Cleanroom) 0.6.0-alpha or newer
+- [Cleanroom Loader](https://github.com/CleanroomMC/Cleanroom) 0.6.10-alpha or newer
 - [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases) 2.4.0 or newer
 
 ### Optional dependency

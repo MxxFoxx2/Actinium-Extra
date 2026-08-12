@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
     id 'com.gradleup.shadow' version '9.5.1'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.4.1'
-    id 'xyz.wagyourtail.unimined' version '1.4.26-kappa'
+    id 'xyz.wagyourtail.unimined' version '1.4.36-kappa'
     id 'net.kyori.blossom' version '2.2.0'
 }
 
@@ -58,10 +58,10 @@ unimined.minecraft {
         if (use_access_transformer.toBoolean()) {
             accessTransformer "${rootProject.projectDir}/src/main/resources/$access_transformer_locations"
         }
-        loader "0.6.0-alpha"
-        runs.auth.username = minecraft_username
+        loader "0.6.10-alpha"
         runs.all {
-            systemProperty("crl.dev.mixin", "${mod_id}.default.mixin.json")
+            systemProperty("crl.dev.mixin", "${mod_id}.mixin.json")
+            args += ['--username', minecraft_username]
             def extraArgs = extra_jvm_args
             if (extraArgs != null && !extraArgs.trim().isEmpty()) {
                 jvmArgs += extraArgs.trim().split(/\s+/).toList()
@@ -131,6 +131,7 @@ sourceSets {
                 property('mod_url', mod_url)
                 property('mod_update_json', mod_update_json)
                 property('mod_logo_path', mod_logo_path)
+                property('mod_issue_tracker', mod_issue_tracker)
             }
         }
     }
@@ -161,6 +162,9 @@ idea {
                     ]
                 }
             }
+            taskTriggers {
+                beforeSync tasks.named("genSources")
+            }
         }
     }
 }
@@ -181,7 +185,7 @@ jar {
         manifest {
             def attribute_map = [:]
             attribute_map['ModType'] = "CRL"
-            attribute_map['MixinConfigs'] = "${mod_id}.default.mixin.json"
+            attribute_map['MixinConfigs'] = "${mod_id}.mixin.json"
             if (configurations.contain.size() > 0) {
                 attribute_map['ContainedDeps'] = configurations.contain.collect { it.name }.join(' ')
                 attribute_map['NonModDeps'] = true
@@ -208,15 +212,6 @@ shadowJar {
     archiveClassifier = "shadow"
 }
 
-
-tasks.named(remapTaskName).configure {
-    doFirst {
-        logging.captureStandardOutput LogLevel.INFO
-    }
-    doLast {
-        logging.captureStandardOutput LogLevel.QUIET
-    }
-}
 
 test {
     useJUnitPlatform()
