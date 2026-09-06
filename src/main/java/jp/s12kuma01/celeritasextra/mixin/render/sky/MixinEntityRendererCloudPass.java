@@ -56,13 +56,11 @@ public class MixinEntityRendererCloudPass {
     )
     private float celeritasExtra$widenCloudFarPlane(float original) {
         CeleritasExtraGameOptions.RenderSettings rs = CeleritasExtraClientMod.options().renderSettings;
-        if (rs.clouds && (rs.cloudDistance > 0
-                || CloudPassState.usesModernCloudRenderer(rs))) {
+        if (rs.clouds && rs.cloudDistance > 0 && CloudPassState.usesDefaultCloudRenderer()) {
             int distance = CloudPassState.effectiveCloudDistanceChunks(
                     rs, Minecraft.getMinecraft().gameSettings.renderDistanceChunks);
-            boolean modernVolume = CloudPassState.usesModernCloudRenderer(rs);
             return Math.max(original,
-                    CloudPassState.cloudFar(distance, rs.cloudScale, modernVolume) + 128.0F);
+                    CloudPassState.cloudFar(distance, rs.cloudScale) + 128.0F);
         }
         return original;
     }

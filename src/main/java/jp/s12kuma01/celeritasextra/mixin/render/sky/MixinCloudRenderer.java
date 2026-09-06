@@ -2,15 +2,9 @@ package jp.s12kuma01.celeritasextra.mixin.render.sky;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import jp.s12kuma01.celeritasextra.client.CeleritasExtraClientMod;
-import jp.s12kuma01.celeritasextra.client.CloudPassState;
 import jp.s12kuma01.celeritasextra.client.gui.CeleritasExtraGameOptions.RenderSettings;
-import jp.s12kuma01.celeritasextra.client.render.cloud.ModernCloudAssets;
-import jp.s12kuma01.celeritasextra.client.render.cloud.ModernCloudRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResourceManager;
 import net.minecraftforge.client.CloudRenderer;
-import net.minecraftforge.client.resource.IResourceType;
-import net.minecraftforge.client.resource.VanillaResourceType;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,13 +13,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.function.Predicate;
 
 /**
- * Controls cloud render distance and cloud scale via Forge's CloudRenderer and optionally delegates
- * its default-dimension cloud path to Celeritas Extra's modern renderer.
+ * Controls cloud render distance and cloud scale via Forge's existing CloudRenderer.
  * <p>
  * Cloud Distance: Two @Redirects decouple the dirty-check from geometry extent.
  * Cloud Scale: @ModifyReturnValue on getScale() (XZ tiling scale).
@@ -53,72 +43,23 @@ public class MixinCloudRenderer {
     @Unique
     private int celeritasExtra$prevCloudScale = -1;
 
-    @Unique
-    private int celeritasExtra$prevModernClouds = -1;
-
-    @Unique
-    private ModernCloudRenderer celeritasExtra$modernCloudRenderer;
-
     // ========================
     // Cloud Distance
     // ========================
 
     /**
-     * Detect cloud setting changes and force both renderers to rebuild their geometry.
+     * Detect cloud setting changes and rebuild the existing cloud geometry.
      */
     @Inject(method = "checkSettings", at = @At("HEAD"))
     private void celeritasExtra$onCheckSettings(CallbackInfo ci) {
         var options = CeleritasExtraClientMod.options().renderSettings;
         int cloudDist = options.cloudDistance;
         int cloudScale = options.cloudScale;
-        int modernClouds = options.modernClouds ? 1 : 0;
         if (cloudDist != celeritasExtra$prevCloudDist
-                || cloudScale != celeritasExtra$prevCloudScale
-                || modernClouds != celeritasExtra$prevModernClouds) {
+                || cloudScale != celeritasExtra$prevCloudScale) {
             dispose();
             celeritasExtra$prevCloudDist = cloudDist;
             celeritasExtra$prevCloudScale = cloudScale;
-            celeritasExtra$prevModernClouds = modernClouds;
-        }
-    }
-
-    /**
-     * Replace only Forge's default cloud renderer. A custom WorldProvider cloud renderer bypasses
-     * this class entirely, while any unsupported modern path returns false and continues here.
-     */
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
-    private void celeritasExtra$renderModernClouds(int cloudTicks, float partialTicks,
-                                                   CallbackInfoReturnable<Boolean> cir) {
-        RenderSettings settings = CeleritasExtraClientMod.options().renderSettings;
-        if (!CloudPassState.usesModernCloudRenderer(settings)) {
-            return;
-        }
-
-        if (celeritasExtra$modernCloudRenderer == null) {
-            celeritasExtra$modernCloudRenderer = new ModernCloudRenderer();
-        }
-        if (celeritasExtra$modernCloudRenderer.render(cloudTicks, partialTicks, settings)) {
-            cir.setReturnValue(true);
-        }
-    }
-
-    @Inject(method = "onResourceManagerReload", at = @At("TAIL"))
-    private void celeritasExtra$reloadModernCloudTexture(IResourceManager resourceManager,
-                                                         Predicate<IResourceType> resourcePredicate,
-                                                         CallbackInfo ci) {
-        if (resourcePredicate.test(VanillaResourceType.TEXTURES)) {
-            ModernCloudAssets.invalidate();
-            if (celeritasExtra$modernCloudRenderer != null) {
-                celeritasExtra$modernCloudRenderer.onTextureReload();
-            }
-        }
-    }
-
-    @Inject(method = "dispose", at = @At("TAIL"))
-    private void celeritasExtra$disposeModernClouds(CallbackInfo ci) {
-        if (celeritasExtra$modernCloudRenderer != null) {
-            celeritasExtra$modernCloudRenderer.destroy();
-            celeritasExtra$modernCloudRenderer = null;
         }
     }
 

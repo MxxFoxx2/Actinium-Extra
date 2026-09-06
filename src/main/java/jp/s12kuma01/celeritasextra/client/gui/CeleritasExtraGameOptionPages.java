@@ -421,7 +421,7 @@ public class CeleritasExtraGameOptionPages {
                 "celeritasextra.option.render.modern_clouds",
                 (opts, v) -> opts.renderSettings.modernClouds = v,
                 opts -> opts.renderSettings.modernClouds,
-                OptionImpact.HIGH,
+                OptionFlag.REQUIRES_ASSET_RELOAD,
                 () -> cloudsOn.getAsBoolean() && ModernCloudAssets.isAvailable());
 
         OptionImpl<CeleritasExtraGameOptions, Boolean> beaconsOption = booleanOption("celeritasextra.option.render.beacons",

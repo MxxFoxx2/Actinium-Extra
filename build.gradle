@@ -113,6 +113,11 @@ processResources {
 }
 
 sourceSets {
+    // Resource-pack tests exercise Minecraft's real fallback resource manager.
+    test {
+        compileClasspath += sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.compileClasspath
+    }
     main {
         blossom {
             javaSources {

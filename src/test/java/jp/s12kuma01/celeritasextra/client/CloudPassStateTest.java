@@ -2,24 +2,28 @@ package jp.s12kuma01.celeritasextra.client;
 
 import jp.s12kuma01.celeritasextra.client.gui.CeleritasExtraGameOptions.RenderSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CloudPassStateTest {
 
-    @Test
-    void explicitCloudDistanceWinsForModernClouds() {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void explicitCloudDistanceWinsWithEitherTexture(boolean modernClouds) {
         RenderSettings settings = new RenderSettings();
-        settings.modernClouds = true;
+        settings.modernClouds = modernClouds;
         settings.cloudDistance = 63;
 
         assertEquals(63, CloudPassState.effectiveCloudDistanceChunks(settings, 12));
     }
 
-    @Test
-    void defaultCloudDistanceFollowsGameDistanceForModernClouds() {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void defaultCloudDistanceFollowsGameDistanceWithEitherTexture(boolean modernClouds) {
         RenderSettings settings = new RenderSettings();
-        settings.modernClouds = true;
+        settings.modernClouds = modernClouds;
         settings.cloudDistance = 0;
 
         assertEquals(12, CloudPassState.effectiveCloudDistanceChunks(settings, 12));

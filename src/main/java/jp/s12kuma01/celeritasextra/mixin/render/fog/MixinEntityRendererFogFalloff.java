@@ -98,8 +98,8 @@ public class MixinEntityRendererFogFalloff {
     }
 
     private static boolean extendsCloudRange(CeleritasExtraGameOptions.RenderSettings settings) {
-        return settings.clouds && (settings.cloudDistance > 0
-                || CloudPassState.usesModernCloudRenderer(settings));
+        return settings.clouds && settings.cloudDistance > 0
+                && CloudPassState.usesDefaultCloudRenderer();
     }
 
     private static int effectiveCloudDistance(CeleritasExtraGameOptions.RenderSettings settings) {
@@ -108,7 +108,6 @@ public class MixinEntityRendererFogFalloff {
     }
 
     private static float cloudFar(CeleritasExtraGameOptions.RenderSettings settings) {
-        return CloudPassState.cloudFar(effectiveCloudDistance(settings), settings.cloudScale,
-                CloudPassState.usesModernCloudRenderer(settings));
+        return CloudPassState.cloudFar(effectiveCloudDistance(settings), settings.cloudScale);
     }
 }

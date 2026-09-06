@@ -19,7 +19,7 @@ The mod started as a port of features from Sodium Extra and Rubidium/Embeddium E
 - Global and per-type particle controls, including options for rain splashes and block particles. Vanilla and modded particle classes are discovered automatically and cached between launches.
 - Controls for the sky, stars and star count, the sun and moon, weather, biome colors, sky colors, and void fog.
 - Fog distance and start controls. Blindness, underwater, and lava fog are kept even when normal fog is disabled.
-- Cloud height, distance, scale (0.25x to 4.00x), and translucency controls, plus optional Minecraft 1.21.6-style clouds with the updated pattern, circular horizon-scale rendering, and a distance fade. Modern Clouds is disabled by default and requires AssetMover.
+- Cloud height, distance, scale (0.25x to 4.00x), and translucency controls, plus the optional Minecraft 1.21.6 cloud texture downloaded by AssetMover. Modern Clouds is disabled by default and uses a built-in resource pack with the existing renderer. User resource packs take priority; height, distance, and scale remain controlled by the existing Forge cloud settings.
 - MoreCulling-style item frame LOD for large frame or map walls. It is disabled by default.
 - Render toggles for item frames, armor stands, paintings, pistons, beacon beams, enchanting table books, name tags, light updates, and vanilla screen shaders.
 - FPS and coordinate overlays with configurable position and text contrast. Extended FPS statistics include average FPS, 1% low, and 0.1% low.

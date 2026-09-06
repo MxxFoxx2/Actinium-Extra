@@ -85,7 +85,7 @@ public class CeleritasExtraGameOptions {
             new BooleanProperty(CAT_RENDER, "clouds", true, "Enable/disable cloud rendering",
                     v -> renderSettings.clouds = v, () -> renderSettings.clouds),
             new BooleanProperty(CAT_RENDER, "modernClouds", false,
-                    "Use Minecraft 1.21.6-style clouds (requires AssetMover 2.5)",
+                    "Use the Minecraft 1.21.6 cloud texture (downloaded by AssetMover 2.5)",
                     v -> renderSettings.modernClouds = v, () -> renderSettings.modernClouds),
             new BooleanProperty(CAT_RENDER, "lightUpdates", true, "Enable/disable light updates",
                     v -> renderSettings.lightUpdates = v, () -> renderSettings.lightUpdates),

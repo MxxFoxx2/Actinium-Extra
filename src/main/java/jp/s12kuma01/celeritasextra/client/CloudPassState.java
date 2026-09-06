@@ -1,7 +1,6 @@
 package jp.s12kuma01.celeritasextra.client;
 
 import jp.s12kuma01.celeritasextra.client.gui.CeleritasExtraGameOptions.RenderSettings;
-import jp.s12kuma01.celeritasextra.client.render.cloud.ModernCloudAssets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -18,8 +17,7 @@ public final class CloudPassState {
 
     /**
      * Forge 1.12.2 builds its legacy cloud mesh to {@code (renderDistance * 2) * 16} blocks.
-     * Celeritas Extra historically passes Cloud Distance through as that render-distance input, so
-     * Modern Clouds must use the same 32-block range step to preserve the established setting.
+     * Celeritas Extra passes Cloud Distance through as that render-distance input.
      */
     private static final float CLOUD_RANGE_BLOCKS_PER_DISTANCE_STEP = 32.0F;
 
@@ -44,31 +42,18 @@ public final class CloudPassState {
      * Scale-aware variant that also covers the largest possible cell-grid snap at the mesh edge.
      */
     public static float cloudFar(int cloudDistance, int cloudScale) {
-        return cloudFar(cloudDistance, cloudScale, false);
-    }
-
-    /**
-     * Chooses the far extent for either Forge's square legacy mesh or the modern circular volume.
-     * Both paths share Forge's established horizontal range; the legacy path additionally covers
-     * the farther corner of its square mesh.
-     */
-    public static float cloudFar(int cloudDistance, int cloudScale, boolean modernCircularVolume) {
         float verticalDistance = verticalDistanceToClouds();
         float cellSize = 12.0F * Math.max(RenderSettings.CLOUD_SCALE_MIN, cloudScale)
                 / RenderSettings.CLOUD_SCALE_VANILLA;
         float gridSnapMargin = Math.max(16.0F, MathHelper.SQRT_2 * cellSize * 2.0F);
 
         float horizontalDistance = cloudHorizontalRangeBlocks(cloudDistance);
-        if (modernCircularVolume) {
-            return MathHelper.sqrt(horizontalDistance * horizontalDistance
-                    + verticalDistance * verticalDistance) + gridSnapMargin;
-        }
         return MathHelper.SQRT_2 * horizontalDistance + verticalDistance + gridSnapMargin;
     }
 
     /**
      * Converts the user-facing cloud distance into the physical radius used by Forge's legacy
-     * renderer. Modern Clouds uses this same radius so toggling renderers does not change range.
+     * renderer, independently of the selected cloud texture.
      */
     public static float cloudHorizontalRangeBlocks(int cloudDistance) {
         if (cloudDistance < 0) {
@@ -78,22 +63,11 @@ public final class CloudPassState {
     }
 
     /**
-     * Resolves the physical cloud range shared by the modern mesh, cloud-pass projection, and fog.
-     * An explicit Celeritas Extra distance always wins. The zero/default sentinel consistently
-     * follows Minecraft's current render distance for both the modern and legacy renderers.
+     * Resolves the cloud range shared by the mesh, cloud-pass projection, and fog.
+     * An explicit distance wins; zero follows Minecraft's current render distance.
      */
     public static int effectiveCloudDistanceChunks(RenderSettings settings, int renderDistanceChunks) {
         return settings.cloudDistance > 0 ? settings.cloudDistance : renderDistanceChunks;
-    }
-
-    /**
-     * Returns whether the optional modern renderer can actually own the current cloud pass.
-     * A saved true value alone is insufficient when AssetMover or its acquired texture is absent.
-     */
-    public static boolean usesModernCloudRenderer(RenderSettings settings) {
-        return settings.modernClouds
-                && ModernCloudAssets.isAvailable()
-                && usesDefaultCloudRenderer();
     }
 
     /**

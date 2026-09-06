@@ -54,11 +54,11 @@ public class CeleritasExtraMod {
                         .registerModernCloudTexture();
                 LOGGER.info("Requested the Minecraft 1.21.6 cloud texture through AssetMover");
             } catch (RuntimeException | LinkageError throwable) {
-                LOGGER.error("AssetMover integration failed; Modern Clouds will remain unavailable",
+                LOGGER.error("AssetMover integration failed; the modern cloud texture was not requested",
                         throwable);
             }
         } else {
-            LOGGER.info("AssetMover is not installed; Modern Clouds will remain unavailable");
+            LOGGER.info("AssetMover is not installed; the modern cloud texture will not be downloaded");
         }
 
         OptionGUIConstructionEvent.BUS.addListener(jp.s12kuma01.celeritasextra.client.gui.CeleritasExtraOptionsListener::onCeleritasOptionsConstruct);

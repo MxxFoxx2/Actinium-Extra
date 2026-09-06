@@ -1,68 +1,99 @@
 package jp.s12kuma01.celeritasextra.client.render.cloud;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResource;
-import net.minecraft.client.resources.IResourceManager;
+import jp.s12kuma01.celeritasextra.CeleritasExtraMod;
+import net.minecraft.client.resources.IResourcePack;
+import net.minecraft.client.resources.data.IMetadataSection;
+import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-/**
- * Runtime availability check for the Minecraft 1.21.6 cloud texture supplied by AssetMover.
- *
- * <p>The optional mod and the resource are checked separately: merely finding AssetMover is not
- * enough to enable Modern Clouds when its first-run download failed. Successful checks are cached;
- * failed checks are retried at a low rate so a resource that finishes appearing during startup can
- * unlock the option without restarting the options screen.</p>
- */
-public final class  ModernCloudAssets {
+/** Supplies the acquired cloud pattern as a low-priority, built-in resource pack. */
+public final class ModernCloudAssets implements IResourcePack {
 
     public static final ResourceLocation CLOUD_TEXTURE =
             new ResourceLocation("celeritasextra", "textures/environment/clouds_1_21_6.png");
-
-    private static final long FAILED_CHECK_RETRY_NANOS = TimeUnit.SECONDS.toNanos(1L);
+    private static final ResourceLocation VANILLA_CLOUD_TEXTURE =
+            new ResourceLocation("minecraft", "textures/environment/clouds.png");
 
     private static boolean available;
-    private static long lastFailedCheckNanos = Long.MIN_VALUE;
+    private final byte[] texture;
 
-    private ModernCloudAssets() {
+    private ModernCloudAssets(byte[] texture) {
+        this.texture = texture;
     }
 
-    /** Returns whether AssetMover is installed and its acquired texture is currently readable. */
     public static boolean isAvailable() {
-        if (!Loader.isModLoaded("assetmover")) {
-            return false;
-        }
-        if (available) {
-            return true;
-        }
-
-        long now = System.nanoTime();
-        if (lastFailedCheckNanos != Long.MIN_VALUE
-                && now - lastFailedCheckNanos < FAILED_CHECK_RETRY_NANOS) {
-            return false;
-        }
-
-        IResourceManager resourceManager = Minecraft.getMinecraft().getResourceManager();
-        if (resourceManager == null) {
-            lastFailedCheckNanos = now;
-            return false;
-        }
-
-        try (IResource ignored = resourceManager.getResource(CLOUD_TEXTURE)) {
-            available = true;
-            return true;
-        } catch (IOException | RuntimeException exception) {
-            lastFailedCheckNanos = now;
-            return false;
-        }
+        return available;
     }
 
-    /** Re-check after resource packs are reloaded or AssetMover finishes startup work. */
-    public static void invalidate() {
+    /**
+     * Called before resource reload, while the incoming packs are accessible directly. Reading
+     * through Minecraft's resource manager here would consult stale (or not yet loaded) packs.
+     * Minecraft orders packs from lowest to highest priority, with vanilla first.
+     */
+    public static List<IResourcePack> withCloudTexture(List<IResourcePack> packs, boolean enabled) {
         available = false;
-        lastFailedCheckNanos = Long.MIN_VALUE;
+        for (int i = packs.size() - 1; i >= 0; i--) {
+            IResourcePack source = packs.get(i);
+            if (!source.resourceExists(CLOUD_TEXTURE)) {
+                continue;
+            }
+            try (InputStream stream = source.getInputStream(CLOUD_TEXTURE)) {
+                byte[] texture = stream.readAllBytes();
+                available = true;
+                if (!enabled) {
+                    return packs;
+                }
+                List<IResourcePack> result = new ArrayList<>(packs);
+                // Override vanilla only; mod, user and server packs retain their precedence.
+                result.add(1, new ModernCloudAssets(texture));
+                return result;
+            } catch (IOException exception) {
+                CeleritasExtraMod.LOGGER.warn("Could not load the modern cloud texture", exception);
+                return packs;
+            }
+        }
+        return packs;
+    }
+
+    @Override
+    public InputStream getInputStream(ResourceLocation location) throws IOException {
+        if (!resourceExists(location)) {
+            throw new FileNotFoundException(location.toString());
+        }
+        return new ByteArrayInputStream(texture);
+    }
+
+    @Override
+    public boolean resourceExists(ResourceLocation location) {
+        return VANILLA_CLOUD_TEXTURE.equals(location);
+    }
+
+    @Override
+    public Set<String> getResourceDomains() {
+        return Set.of("minecraft");
+    }
+
+    @Override
+    public <T extends IMetadataSection> T getPackMetadata(MetadataSerializer serializer, String section) {
+        return null;
+    }
+
+    @Override
+    public BufferedImage getPackImage() throws IOException {
+        throw new FileNotFoundException("pack.png");
+    }
+
+    @Override
+    public String getPackName() {
+        return "Celeritas Extra Modern Cloud Texture";
     }
 }
