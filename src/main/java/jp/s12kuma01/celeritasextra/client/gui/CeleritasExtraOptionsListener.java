@@ -45,7 +45,7 @@ public class CeleritasExtraOptionsListener {
 
     /**
      * Replaces vanilla boolean toggles in the WINDOW group with enhanced cycling controls:
-     * - Fullscreen → 3-way Screen Mode (Windowed / Borderless / Fullscreen)
+     * - Fullscreen → 3-way Screen Mode on compatible desktop runtimes
      * - VSync → 3-way VSync (Off / On / Adaptive)
      */
     public static void onOptionGroupConstruct(OptionGroupConstructionEvent event) {
@@ -59,8 +59,10 @@ public class CeleritasExtraOptionsListener {
             if (option.getId() == null) continue;
 
             if (option.getId().matches(StandardOptions.Option.FULLSCREEN)) {
-                options.set(i, createScreenModeOption());
-                CeleritasExtraMod.LOGGER.debug("Replaced Fullscreen option with screen mode control");
+                if (WindowModeSupport.canOfferBorderless()) {
+                    options.set(i, createScreenModeOption());
+                    CeleritasExtraMod.LOGGER.debug("Replaced Fullscreen option with screen mode control");
+                }
             } else if (option.getId().matches(StandardOptions.Option.VSYNC)) {
                 options.set(i, createVSyncOption());
                 CeleritasExtraMod.LOGGER.debug("Replaced VSync option with adaptive VSync control");
