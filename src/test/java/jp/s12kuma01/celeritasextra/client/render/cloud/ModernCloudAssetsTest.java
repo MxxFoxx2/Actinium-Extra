@@ -7,6 +7,8 @@ import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -23,6 +25,31 @@ class ModernCloudAssetsTest {
     private static final ResourceLocation CLOUD = new ResourceLocation("minecraft", "textures/environment/clouds.png");
     private static final IResourcePack VANILLA = new TestPack(Map.of(CLOUD, new byte[]{1}));
     private static final IResourcePack ACQUIRED = new TestPack(Map.of(ModernCloudAssets.CLOUD_TEXTURE, new byte[]{2}));
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void waitsForPackInitializationBeforeCheckingTheDownloadedTexture(boolean enabled) throws IOException {
+        IResourcePack delayed = new TestPack(Map.of(ModernCloudAssets.CLOUD_TEXTURE, new byte[]{2})) {
+            private boolean ready;
+
+            @Override
+            public Set<String> getResourceDomains() {
+                // AssetMover's InternalResourcePack waits for pending downloads at this point.
+                ready = true;
+                return super.getResourceDomains();
+            }
+
+            @Override
+            public boolean resourceExists(ResourceLocation location) {
+                return ready && super.resourceExists(location);
+            }
+        };
+
+        List<IResourcePack> result = ModernCloudAssets.withCloudTexture(List.of(VANILLA, delayed), enabled);
+
+        assertTrue(ModernCloudAssets.isAvailable(), "First reload must unlock the option even when it is off");
+        assertArrayEquals(new byte[]{enabled ? (byte) 2 : (byte) 1}, readCloud(result));
+    }
 
     @Test
     void exposesAcquiredTextureAtStandardPathWithoutChangingCallerList() throws IOException {

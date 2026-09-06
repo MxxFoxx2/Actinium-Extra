@@ -43,7 +43,10 @@ public final class ModernCloudAssets implements IResourcePack {
         available = false;
         for (int i = packs.size() - 1; i >= 0; i--) {
             IResourcePack source = packs.get(i);
-            if (!source.resourceExists(CLOUD_TEXTURE)) {
+            // Follow Minecraft's pack initialization order. AssetMover waits for pending
+            // downloads in getResourceDomains(); probing files first races that download.
+            if (!source.getResourceDomains().contains("celeritasextra")
+                    || !source.resourceExists(CLOUD_TEXTURE)) {
                 continue;
             }
             try (InputStream stream = source.getInputStream(CLOUD_TEXTURE)) {
