@@ -1,6 +1,12 @@
 name: Build mod jar
 
-on: [workflow_dispatch, push]
+# Branch pushes only: a tag push already builds the jars through Releases, and running both just
+# doubles the CI minutes and clutters the Actions list with duplicate runs.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
