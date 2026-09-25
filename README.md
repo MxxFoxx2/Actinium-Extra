@@ -7,10 +7,8 @@ The mod started as a port of features from Sodium Extra and Rubidium/Embeddium E
 ## Requirements
 
 - [Cleanroom Loader](https://github.com/CleanroomMC/Cleanroom) 0.6.10-alpha or newer
-- [Celeritas](https://github.com/kappa-maintainer/Celeritas/Actinium-auto-build/releases) 2.4.0 or newer
-- [Actinium]()
-
-
+* [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build) 2.4.0 or newer, or [Actinium](https://github.com/DHJComical/Actinium) alpha-0.0.9 or newer
+  
 ### Optional dependency
 
 - [AssetMover](https://github.com/CleanroomMC/AssetMover) 2.5 or newer unlocks Modern Clouds.
