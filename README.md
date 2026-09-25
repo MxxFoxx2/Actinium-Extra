@@ -51,6 +51,25 @@ Then run `./gradlew build`. Bumping the pinned `actinium_api_version` in `gradle
 
 To try either renderer in a dev run, put a runnable copy of it into `run/client/mods`; that is also what selects the renderer adapter at runtime.
 
+## Keeping in sync with upstream
+
+This fork renames the project, so upstream commits cannot simply be merged into `main`: files upstream adds land under `jp.s12kuma01` and with `celeritasextra` keys, and a plain merge would take them quietly.
+
+A weekly `Upstream sync` workflow (also runnable by hand from the Actions tab) fetches [Sumire-Labs/Celeritas-Extra](https://github.com/Sumire-Labs/Celeritas-Extra) and:
+
+- if the merge is clean, pushes `upstream/sync-<sha>` and opens a pull request listing the upstream commits;
+- if it conflicts, opens or updates an issue labelled `upstream-sync` with the conflicting files, and pushes nothing.
+
+Nothing is merged automatically. The pull request is built by `Build mod jar`, which runs `.github/scripts/check-fork-identity.sh` first: it fails when `gradle.properties`, the mixin config, the icon or the language/package namespaces have drifted back to upstream's, so a sync can only be merged after new upstream files have been reparented to `dev.mxxfoxx.actiniumextra` and `actiniumextra`.
+
+To do the same by hand:
+
+```bash
+git remote add upstream https://github.com/Sumire-Labs/Celeritas-Extra.git   # once
+bash .github/scripts/upstream-sync.sh --dry-run                              # see what would happen
+./.github/scripts/check-fork-identity.sh                                     # the same check CI runs
+```
+
 ## Testing
 
 `./gradlew test` runs the unit tests, including the checks that pin the contributed option pages, so a page layout change has to be deliberate. Renderer attachment itself is verified in game: open the video settings and confirm the five Actinium Extra pages appear, and on Actinium that the fullscreen row is still Actinium's own window-mode option.

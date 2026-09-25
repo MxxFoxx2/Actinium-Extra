@@ -1,10 +1,14 @@
 name: Build mod jar
 
-# Branch pushes only: a tag push already builds the jars through Releases, and running both just
-# doubles the CI minutes and clutters the Actions list with duplicate runs.
+# Branch pushes and pull requests only: a tag push already builds the jars through Releases, and
+# running both just doubles the CI minutes and clutters the Actions list with duplicate runs.
+# Pull requests are built so an upstream-sync merge cannot land broken.
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -26,6 +30,8 @@ jobs:
         name: Set up Gradle
       - name: Add permission
         run: chmod +x ./gradlew
+      - name: Check fork identity
+        run: bash .github/scripts/check-fork-identity.sh
       - name: Download Actinium renderer API jar
         run: |
           version=$(grep -m1 '^actinium_api_version *=' gradle.properties | cut -d= -f2 | tr -d ' ')

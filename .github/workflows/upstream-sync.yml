@@ -1,0 +1,24 @@
+name: Upstream sync
+
+# Weekly check for new commits in Sumire-Labs/Celeritas-Extra, the project this fork was renamed
+# from. Manual runs are supported for right after an upstream release.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Full history: the merge attempt needs a merge base with upstream.
+          fetch-depth: 0
+      - name: Open a sync pull request, or an issue when it conflicts
+        run: bash .github/scripts/upstream-sync.sh
