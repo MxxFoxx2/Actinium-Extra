@@ -52,6 +52,14 @@ if grep -rq 'celeritasextra' src; then
     fail "the old celeritasextra namespace is back in src/ (lang keys, mixin config or page ids)"
 fi
 
+# The same, by path: a merged asset that carries no old identifier in its content (an image, a
+# sound) would pass the greps above while still landing in upstream's namespace.
+for old_path in "src/main/java/jp" "src/main/resources/assets/celeritasextra"; do
+    if [ -e "$old_path" ]; then
+        fail "${old_path} exists again; move upstream's new files to the fork's namespace"
+    fi
+done
+
 if [ "$status" -eq 0 ]; then
     echo "fork identity intact: mod id actiniumextra, root package dev.mxxfoxx"
 fi

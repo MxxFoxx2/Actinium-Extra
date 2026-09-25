@@ -98,7 +98,9 @@ Conflicting files:
 ${conflicts}
 
 Merge them by hand and keep the fork's identity: \`dev.mxxfoxx\` packages, \`actiniumextra\` mod id and
-language keys. See README, "Keeping in sync with upstream".
+language keys. A conflict reported at a \`dev/mxxfoxx/...\` path means upstream added the file under
+the old \`jp/s12kuma01\` namespace: git matched it to this fork's rename, so take upstream's content
+and keep the fork's path. See README, "Keeping in sync with upstream".
 EOF
 
 existing_issue="$(gh issue list --repo "$GH_REPO" --state open --label upstream-sync \

@@ -1,0 +1,6 @@
+# Shell scripts run on Linux CI runners; keep them LF even with core.autocrlf on a Windows checkout.
+*.sh text eol=lf
+
+# Never let line-ending conversion touch binary payloads.
+*.png binary
+*.jar binary
