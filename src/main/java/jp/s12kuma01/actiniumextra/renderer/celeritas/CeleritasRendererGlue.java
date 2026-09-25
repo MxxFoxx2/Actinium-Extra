@@ -38,7 +38,7 @@ import java.util.function.Function;
 /**
  * Binds Actinium Extra to Celeritas' option model ({@code org.taumc.celeritas.api}).
  * <p>
- * Celeritas only accepts its own option classes in its settings screen, so every row Celeritas
+ * Celeritas only accepts its own option classes in its settings screen, so every row Actinium
  * Extra contributes is converted from the shared specification here. This class is the only place
  * in the addon, besides {@link CeleritasOptionStorage}, that may reference a Celeritas type: it is
  * instantiated reflectively by {@link jp.s12kuma01.actiniumextra.renderer.RendererBackend} once
@@ -172,7 +172,7 @@ public final class CeleritasRendererGlue implements RendererGlue {
     }
 
     private Option<?> toSlider(OptionSpec.Slider spec, Map<String, Option<?>> built,
-                              StandardRewriteSpec.StandardId standard) {
+                               StandardRewriteSpec.StandardId standard) {
         OptionImpl.Builder<ActiniumExtraGameOptions, Integer> builder = OptionImpl
                 .createBuilder(int.class, storage)
                 .setName(text(spec.name()))

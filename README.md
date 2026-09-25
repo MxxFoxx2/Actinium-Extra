@@ -53,6 +53,8 @@ To try either renderer in a dev run, put a runnable copy of it into `run/client/
 
 `./gradlew test` runs the unit tests, including the checks that pin the contributed option pages, so a page layout change has to be deliberate. Renderer attachment itself is verified in game: open the video settings and confirm the five Actinium Extra pages appear, and on Actinium that the fullscreen row is still Actinium's own window-mode option.
 
+The two renderer adapters are intentionally near-identical code bound to two different option models, so the unit tests guard the shared page description rather than the adapters: building pages needs the client-side translation bootstrap (`I18n`), which a plain JVM test does not have. When editing one adapter, mirror the change in the other and compare them with their backend names normalized - the only intended difference is `hasWindowModeOption()`.
+
 ## Features
 
 - Animation controls for water, lava, fire, portals, and block textures.

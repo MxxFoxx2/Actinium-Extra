@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -137,13 +139,13 @@ class ActiniumExtraOptionSpecsTest {
     }
 
     @Test
-    void everyGateTargetsAnOptionTheAdaptersHaveAlreadyBuilt() {
+    void everyGateTargetsAnEarlierBooleanOption() {
         for (PageSpec page : ActiniumExtraOptionSpecs.pages()) {
-            Set<String> built = new HashSet<>();
+            Map<String, OptionSpec> built = new LinkedHashMap<>();
             for (GroupSpec group : page.groups()) {
                 for (OptionSpec option : group.options()) {
                     assertGateResolvable(page, option.nameKey(), option.gate(), built);
-                    built.add(option.nameKey());
+                    built.put(option.nameKey(), option);
                 }
             }
         }
@@ -201,8 +203,9 @@ class ActiniumExtraOptionSpecsTest {
     }
 
     /**
-     * Walks a gate tree, asserting every parent reference points at a row the adapters convert
-     * before this one.
+     * Walks a gate tree, asserting every parent reference points at a toggle the adapters convert
+     * before this one. Only a toggle can gate a row: the adapters read the parent's value as a
+     * boolean, so gating on a slider or a cycle would fail at runtime with a class cast.
      *
      * @param page      the page holding the row
      * @param optionKey the row whose gate is checked
@@ -210,11 +213,13 @@ class ActiniumExtraOptionSpecsTest {
      * @param built     the rows converted before this one
      */
     private static void assertGateResolvable(PageSpec page, String optionKey, GateSpec gate,
-                                             Set<String> built) {
+                                             Map<String, OptionSpec> built) {
         switch (gate) {
-            case GateSpec.ByKey(String parentKey) -> assertTrue(built.contains(parentKey),
-                    () -> page.id().path() + " gates '" + optionKey + "' on '" + parentKey
-                            + "', which is not built before it");
+            case GateSpec.ByKey(String parentKey) -> {
+                OptionSpec parent = built.get(parentKey);
+                assertInstanceOf(OptionSpec.Bool.class, parent, () -> page.id().path() + " gates '"
+                        + optionKey + "' on '" + parentKey + "', which is not a toggle built before it");
+            }
             case GateSpec.All(List<GateSpec> gates) ->
                     gates.forEach(part -> assertGateResolvable(page, optionKey, part, built));
             case GateSpec.Always ignored -> {

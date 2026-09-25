@@ -19,9 +19,11 @@ import java.util.function.Function;
  */
 public sealed interface OptionSpec {
     /**
-     * The language key identifying this option, also used as the gate target by dependent options.
+     * The identity of this option, also used as the gate target by dependent options. It is normally
+     * the option's language key, except for rows whose label is not a key at all (the dynamically
+     * discovered particle switches identify themselves by particle class name).
      *
-     * @return the option's language key
+     * @return the option's identity key
      */
     String nameKey();
 
