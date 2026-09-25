@@ -1,0 +1,113 @@
+package dev.mxxfoxx.actiniumextra.mixin.render.fog;
+
+import dev.mxxfoxx.actiniumextra.client.ActiniumExtraClientMod;
+import dev.mxxfoxx.actiniumextra.client.CloudPassState;
+import dev.mxxfoxx.actiniumextra.client.FogState;
+import dev.mxxfoxx.actiniumextra.client.gui.ActiniumExtraGameOptions;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.EntityRenderer;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+
+/**
+ * Fog falloff control — adjusts the GL_LINEAR fog start/end distances.
+ * <p>
+ * Celeritas/Sodium reads GL_FOG_START / GL_FOG_END into its terrain & sky shader fog
+ * uniforms, so these values must always be finite with {@code start < end} — feeding
+ * Float.MAX_VALUE (or start == end) poisons the shader fog math. When fog is OFF we leave
+ * the values untouched and let {@link MixinEntityRendererFog}'s {@code disableFog()} drive
+ * Celeritas to its no-fog shader variant (and disable fixed-function fog).
+ * <p>
+ * During the cloud pass (see {@link dev.mxxfoxx.actiniumextra.client.CloudPassState}) we
+ * push fog past the extended cloud volume so distant clouds are not faded out by the
+ * render-distance fog end — without affecting terrain fog.
+ */
+@Mixin(EntityRenderer.class)
+public class MixinEntityRendererFogFalloff {
+
+    /**
+     * Vanilla GL_LINEAR fog end == farPlaneDistance; used to keep custom fog start below the end.
+     */
+    @Shadow
+    private float farPlaneDistance;
+
+    @ModifyArg(
+            method = "setupFog",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;setFogStart(F)V"),
+            index = 0
+    )
+    private float modifyFogStart(float original) {
+        ActiniumExtraGameOptions.RenderSettings rs = ActiniumExtraClientMod.options().renderSettings;
+
+        // Cloud pass: keep clouds out of fog so extended cloud distance is actually visible.
+        if (CloudPassState.inCloudPass && extendsCloudRange(rs)) {
+            return cloudFar(rs);
+        }
+
+        // Protect gameplay fog (blindness / water / lava): leave it vanilla.
+        if (FogState.isGameplayFog()) {
+            return original;
+        }
+
+        // Fog off: do nothing here; disableFog() handles suppression. Never write MAX_VALUE.
+        if (!rs.fog) {
+            return original;
+        }
+
+        float startPercent = rs.fogStart / 100.0f;
+        if (rs.fogDistance > 0) {
+            float end = (rs.fogDistance + 1) * 16.0f;
+            float start = rs.fogDistance * 16.0f * startPercent;
+            return Math.min(start, end - 0.5f);
+        }
+
+        // Default: scale vanilla start, but keep it below the fog end (== farPlaneDistance).
+        float start = original * startPercent;
+        return Math.min(start, farPlaneDistance - 0.5f);
+    }
+
+    @ModifyArg(
+            method = "setupFog",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;setFogEnd(F)V"),
+            index = 0
+    )
+    private float modifyFogEnd(float original) {
+        ActiniumExtraGameOptions.RenderSettings rs = ActiniumExtraClientMod.options().renderSettings;
+
+        // Cloud pass: end just beyond the cloud-far start (finite, start < end).
+        if (CloudPassState.inCloudPass && extendsCloudRange(rs)) {
+            return cloudFar(rs) + 64.0f;
+        }
+
+        // Protect gameplay fog (blindness / water / lava): leave it vanilla.
+        if (FogState.isGameplayFog()) {
+            return original;
+        }
+
+        if (!rs.fog) {
+            return original;
+        }
+
+        if (rs.fogDistance > 0) {
+            return (rs.fogDistance + 1) * 16.0f;
+        }
+
+        return original;
+    }
+
+    private static boolean extendsCloudRange(ActiniumExtraGameOptions.RenderSettings settings) {
+        return settings.clouds && settings.cloudDistance > 0
+                && CloudPassState.usesDefaultCloudRenderer();
+    }
+
+    private static int effectiveCloudDistance(ActiniumExtraGameOptions.RenderSettings settings) {
+        return CloudPassState.effectiveCloudDistanceChunks(
+                settings, Minecraft.getMinecraft().gameSettings.renderDistanceChunks);
+    }
+
+    private static float cloudFar(ActiniumExtraGameOptions.RenderSettings settings) {
+        return CloudPassState.cloudFar(effectiveCloudDistance(settings), settings.cloudScale);
+    }
+}

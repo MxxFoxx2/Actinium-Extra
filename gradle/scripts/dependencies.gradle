@@ -25,7 +25,7 @@ dependencies {
     // Renderer compile dependencies (place the development or release jars in libs/).
     // Celeritas and Actinium expose the same option model under different package names, so both
     // jars can sit on the compile classpath at once; each renderer adapter in
-    // jp.s12kuma01.actiniumextra.renderer binds to one of them and is only loaded at runtime when
+    // dev.mxxfoxx.actiniumextra.renderer binds to one of them and is only loaded at runtime when
     // its renderer is installed. Neither jar is bundled or forced onto the runtime classpath.
     // For integration testing, put a runnable/remapped renderer jar in run/client/mods instead;
     // which renderer is in that directory is what selects the adapter at runtime.

@@ -1,7 +1,7 @@
 {
   "required": true,
   "priority": 1001,
-  "package": "jp.s12kuma01.actiniumextra.mixin",
+  "package": "dev.mxxfoxx.actiniumextra.mixin",
   "compatibilityLevel": "JAVA_25",
   "target": "@env(DEFAULT)",
   "injectors": {
