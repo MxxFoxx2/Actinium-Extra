@@ -23,7 +23,26 @@ DRY_RUN=0
 say() { printf '%s\n' "$*"; }
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 
-[ -n "${GH_REPO:-}" ] || GH_REPO="$(gh repo view --json nameWithOwner -q .nameWithOwner)" || die "GH_REPO unknown"
+# The repository to report into. Never rely on gh's own remote heuristics: this clone has an
+# `upstream` remote pointing at the original project, and gh may well pick that, which would open
+# pull requests and issues on someone else's repository. GITHUB_REPOSITORY wins on a runner, then an
+# explicit GH_REPO, and otherwise the slug is parsed out of `origin`.
+slug_from_url() {
+    # Handles https://host/o/r.git, git@host:o/r.git and ssh://git@host/o/r.git by normalising the
+    # separators and taking the last two path segments.
+    printf '%s' "$1" \
+        | sed -E -e 's#\.git/?$##' -e 's#://#/#g' -e 's#:#/#g' -e 's#^[^@]*@##' -e 's#/*$##' \
+        | awk -F/ 'NF>1 {print $(NF-1)"/"$NF}'
+}
+
+if [ -z "${GH_REPO:-}" ]; then
+    origin_url="$(git remote get-url origin 2>/dev/null)" || die "no origin remote; set GH_REPO=owner/repo"
+    GH_REPO="${GITHUB_REPOSITORY:-$(slug_from_url "$origin_url")}"
+fi
+case "$GH_REPO" in
+    */*) ;;
+    *) die "GH_REPO '${GH_REPO}' is not owner/repo" ;;
+esac
 
 target_ref="$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse HEAD)"
 branch_body="$(mktemp)"
