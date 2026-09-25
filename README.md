@@ -1,8 +1,17 @@
-# Celeritas Extra
+# Actinium Extra
 
-Celeritas Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases) and [Actinium](https://github.com/DHJComical/Actinium), built to run on Cleanroom. It adds more graphics, particle, HUD, and window settings to the renderer's video settings screen.
+Actinium Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases) and [Actinium](https://github.com/DHJComical/Actinium), built to run on Cleanroom. It adds more graphics, particle, HUD, and window settings to the renderer's video settings screen.
 
 The mod started as a port of features from Sodium Extra and Rubidium/Embeddium Extra. It also includes several additions and backports made specifically for the Cleanroom environment.
+
+It was previously released as **Celeritas Extra**; the project keeps working with Celeritas and was renamed because it now attaches to Actinium as well.
+
+### Upgrading from Celeritas Extra
+
+The mod id changed from `celeritasextra` to `actiniumextra`, so the game treats it as a new mod:
+
+- Rename `config/celeritas-extra.cfg` to `config/actinium-extra.cfg` to keep your settings; the option keys inside are unchanged.
+- The Modern Clouds texture is requested from AssetMover under the new `actiniumextra` namespace and is downloaded again once.
 
 ## Requirements
 
@@ -17,11 +26,11 @@ The mod started as a port of features from Sodium Extra and Rubidium/Embeddium E
 
 ## Renderer support
 
-Celeritas and Actinium expose the same option model under different package names, and each renderer only accepts its own classes in its settings screen. Celeritas Extra therefore describes the pages it contributes once and converts them with a small adapter per renderer, picking the adapter from the mod that is actually installed. One jar covers both.
+Celeritas and Actinium expose the same option model under different package names, and each renderer only accepts its own classes in its settings screen. Actinium Extra therefore describes the pages it contributes once and converts them with a small adapter per renderer, picking the adapter from the mod that is actually installed. One jar covers both.
 
 The layouts are not identical, deliberately:
 
-- Actinium already offers its own windowed / borderless / exclusive fullscreen option, so Celeritas Extra does not replace the fullscreen toggle there. On Celeritas, where vanilla's boolean toggle is all there is, the add-on still swaps it for its three-way screen mode control on desktops that can run borderless.
+- Actinium already offers its own windowed / borderless / exclusive fullscreen option, so Actinium Extra does not replace the fullscreen toggle there. On Celeritas, where vanilla's boolean toggle is all there is, the add-on still swaps it for its three-way screen mode control on desktops that can run borderless.
 - The adaptive VSync replacement applies to both renderers, as neither offers adaptive sync.
 
 If neither renderer is installed the mod logs an error during startup and contributes no options: the settings live in the renderer's video settings screen, so there is nowhere to reach them from.
@@ -42,7 +51,7 @@ To try either renderer in a dev run, put a runnable copy of it into `run/client/
 
 ## Testing
 
-`./gradlew test` runs the unit tests, including the checks that pin the contributed option pages, so a page layout change has to be deliberate. Renderer attachment itself is verified in game: open the video settings and confirm the five Celeritas Extra pages appear, and on Actinium that the fullscreen row is still Actinium's own window-mode option.
+`./gradlew test` runs the unit tests, including the checks that pin the contributed option pages, so a page layout change has to be deliberate. Renderer attachment itself is verified in game: open the video settings and confirm the five Actinium Extra pages appear, and on Actinium that the fullscreen row is still Actinium's own window-mode option.
 
 ## Features
 
@@ -68,7 +77,7 @@ To try either renderer in a dev run, put a runnable copy of it into `run/client/
 
 ## License
 
-Celeritas Extra is licensed under the [LGPL-3.0](LICENSE.md).
+Actinium Extra is licensed under the [LGPL-3.0](LICENSE.md).
 
 ## AI usage
 

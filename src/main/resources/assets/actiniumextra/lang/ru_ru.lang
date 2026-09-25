@@ -1,0 +1,158 @@
+# Actinium Extra - Российская Локализация 🪆
+# Based on Embeddium Extra translations
+
+# Option Pages
+actiniumextra.option.page.animations=Анимации
+actiniumextra.option.page.particles=Частицы
+actiniumextra.option.page.details=Детали
+actiniumextra.option.page.render=Рендер
+actiniumextra.option.page.extra=Дополнительно
+
+# Animation Options
+actiniumextra.option.animations.all=Анимации
+actiniumextra.option.animations.all.tooltip=Если этот параметр включен, анимации будут видны.
+actiniumextra.option.animations.water=Вода
+actiniumextra.option.animations.water.tooltip=Если этот параметр включен, будет видна анимация воды.
+actiniumextra.option.animations.lava=Лава
+actiniumextra.option.animations.lava.tooltip=Если этот параметр включен, будет видна анимация лавы.
+actiniumextra.option.animations.fire=Огонь
+actiniumextra.option.animations.fire.tooltip=Если этот параметр включен, будет видна анимация огня.
+actiniumextra.option.animations.portal=Портал
+actiniumextra.option.animations.portal.tooltip=Если этот параметр включен, будут видны анимации порталов.
+actiniumextra.option.animations.block=Анимации Блоков
+actiniumextra.option.animations.block.tooltip=Если этот параметр включен, будут видны анимации блоков.
+
+# Particle Options
+actiniumextra.option.particles.all=Частицы
+actiniumextra.option.particles.all.tooltip=Если включено, частицы будут обрабатываться.
+actiniumextra.option.particles.rain_splash=Брызги дождя
+actiniumextra.option.particles.rain_splash.tooltip=Если включено, отображаются частицы брызг дождя.
+actiniumextra.option.particles.block_break=Разрушение блока
+actiniumextra.option.particles.block_break.tooltip=Если включено, частицы разрушения блока будут обрабатываться.
+actiniumextra.option.particles.block_breaking=Частицы Процесса Разрушения Блока
+actiniumextra.option.particles.block_breaking.tooltip=Если включено, частицы процесса разрушения блока будут обрабатываться.
+actiniumextra.option.particles.other.tooltip=Если включено, частицы %s обрабатываются.
+
+# Detail Options
+actiniumextra.option.details.sky=Небо
+actiniumextra.option.details.sky.tooltip=Если этот параметр включен, то будет отображаться небо.
+actiniumextra.option.details.stars=Звёзды
+actiniumextra.option.details.stars.tooltip=Если этот параметр включен, то будут отображаться звезды.
+actiniumextra.option.details.total_stars=Количество Звёзд
+actiniumextra.option.details.total_stars.tooltip=Контролирует количество звёзд, отображаемых на небе. Для применения требуется перезагрузка рендерера.
+actiniumextra.option.details.sun_moon=Солнце & Луна
+actiniumextra.option.details.sun_moon.tooltip=Если этот параметр включен, то будут отображаться солнце и луна.
+actiniumextra.option.details.rain_snow=Дождь & Снег
+actiniumextra.option.details.rain_snow.tooltip=Если этот параметр включен, отображаются дождь и снег.
+actiniumextra.option.details.biome_colors=Цвета Биомов
+actiniumextra.option.details.biome_colors.tooltip=Если этот параметр включен, цвета изменяются в зависимости от биома.
+actiniumextra.option.details.sky_colors=Цвета неба
+actiniumextra.option.details.sky_colors.tooltip=Применяет цвет неба в зависимости от биома.
+actiniumextra.option.details.void_fog=Туман Пустоты
+actiniumextra.option.details.void_fog.tooltip=Если этот параметр включен, туман пустоты отображается под миром.
+
+# Render Options
+actiniumextra.option.render.fog=Туман
+actiniumextra.option.render.fog.tooltip=Если этот параметр включен, то будет отображаться туман.
+actiniumextra.option.render.fog_start=Множитель начала тумана
+actiniumextra.option.render.fog_start.tooltip=Определяет, на каком расстоянии для игрока начинает отображаться туман местности.
+actiniumextra.option.render.fog_distance=Дистанция тумана
+actiniumextra.option.render.fog_distance.tooltip=Контролирует дистанцию рендеринга тумана в чанках. 0 = По умолчанию (использует дистанцию рендеринга).
+actiniumextra.option.render.prevent_shaders=Блокировать шейдеры
+actiniumextra.option.render.prevent_shaders.tooltip=Если включено, загрузка любых ванильных шейдеров будет заблокирована. Например, искажённый обзор при наблюдении от лица паука.
+actiniumextra.option.render.clouds=Облака
+actiniumextra.option.render.clouds.tooltip=Если этот параметр включен, облака будут отображаться.
+actiniumextra.option.render.modern_clouds=Современные облака
+actiniumextra.option.render.modern_clouds.tooltip=Использует текстуру облаков Minecraft 1.21.6 с существующим рендерером. AssetMover 2.5 загружает текстуру. Сохраняет настройки высоты, дальности и масштаба облаков; пользовательские наборы ресурсов имеют приоритет. Применение перезагружает ресурсы.
+actiniumextra.option.render.cloud_height=Высота облаков
+actiniumextra.option.render.cloud_height.tooltip=Управляет высотой отображения облаков.
+actiniumextra.option.render.cloud_distance=Дистанция облаков
+actiniumextra.option.render.cloud_distance.tooltip=Контролирует дистанцию рендеринга облаков в чанках. 0 = По умолчанию (использует дистанцию рендеринга).
+actiniumextra.option.render.cloud_scale=Масштаб Облаков
+actiniumextra.option.render.cloud_scale.tooltip=Управляет размером облаков от 0,25x до 4,00x. 1,00x — стандартный размер ванильной игры.
+actiniumextra.option.render.cloud_translucency=Прозрачность Облаков
+actiniumextra.option.render.cloud_translucency.tooltip=Контролирует, когда облака становятся полупрозрачными. По умолчанию: на основе высоты облаков. Всегда: всегда полупрозрачные. Никогда: всегда непрозрачные.
+actiniumextra.option.cloud_translucency.default=По умолчанию
+actiniumextra.option.cloud_translucency.always=Всегда
+actiniumextra.option.cloud_translucency.never=Никогда
+actiniumextra.option.render.light_updates=Обновления освещения
+actiniumextra.option.render.light_updates.tooltip=Если отключено, обновления освещения не будут обрабатываться. Это может улучшить производительность, но может вызвать визуальные артефакты.
+actiniumextra.option.render.item_frames=Рамки для предметов
+actiniumextra.option.render.item_frames.tooltip=Если этот параметр включен, отображаются рамки для предметов.
+actiniumextra.option.render.item_frame_lod_distance=Дальность упрощения рамки
+actiniumextra.option.render.item_frame_lod_distance.tooltip=За этим расстоянием (в блоках) предметы в рамках отображаются с меньшим числом граней, а карты скрываются. 0 = Выкл.
+actiniumextra.option.render.armor_stands=Стойки для брони
+actiniumextra.option.render.armor_stands.tooltip=Если этот параметр включен, отображаются стойки для брони.
+actiniumextra.option.render.paintings=Картины
+actiniumextra.option.render.paintings.tooltip=Если этот параметр включен, то картины будут видны.
+actiniumextra.option.render.pistons=Поршни
+actiniumextra.option.render.pistons.tooltip=Если включено, отображаются анимации выдвижения поршней.
+actiniumextra.option.render.beacons=Луч Маяка
+actiniumextra.option.render.beacons.tooltip=Если этот параметр включен, отображаются лучи маяка.
+actiniumextra.option.render.limit_beacon_beam_height=Ограничить высоту луча маяка
+actiniumextra.option.render.limit_beacon_beam_height.tooltip=Если включено, лучи маяка будут ограничены максимальной высотой мира.
+actiniumextra.option.render.enchanting_books=Книга на столе зачарования
+actiniumextra.option.render.enchanting_books.tooltip=Если включено, книги на столе зачарования отображаются.
+actiniumextra.option.render.player_name_tag=Тег С Именем Игрока
+actiniumextra.option.render.player_name_tag.tooltip=Если этот параметр включен, будут видны теги с именами игроков.
+actiniumextra.option.render.item_frame_name_tag=Имя Рамки Предмета
+actiniumextra.option.render.item_frame_name_tag.tooltip=Если включено, имена рамок с предметами будут видны.
+
+# Extra Options
+actiniumextra.option.extra.fps=Отображать FPS
+actiniumextra.option.extra.fps.tooltip=Отображает текущее значение FPS.
+actiniumextra.option.extra.fps_extended=Расширенное отображение FPS
+actiniumextra.option.extra.fps_extended.tooltip=Если включено, показывает средний, 1%% Low и 0.1%% Low FPS в дополнение к текущему.
+actiniumextra.option.extra.coords=Отображать координаты
+actiniumextra.option.extra.coords.tooltip=Отображает координаты игрока.
+actiniumextra.option.extra.ignore_reduced_debug_info=Игнорировать сокращённую отладочную информацию
+actiniumextra.option.extra.ignore_reduced_debug_info.tooltip=Если включено, координаты будут отображаться даже при активной сокращённой отладочной информации (например, на серверах с игровым правилом reducedDebugInfo).
+actiniumextra.option.extra.overlay_corner=Положение оверлея
+actiniumextra.option.extra.overlay_corner.tooltip=Определяет, в каком углу экрана будет отображаться оверлей (FPS и координаты).
+actiniumextra.option.extra.text_contrast=Контраст текста
+actiniumextra.option.extra.text_contrast.tooltip=Настраивает контрастность счётчика FPS/координат. Нет: обычный белый текст. Фон: подложка под текстом, как в меню отладки. Тень: белый текст с тенью.
+actiniumextra.option.extra.vertical_sync=Вертикальная синхронизация
+actiniumextra.option.extra.vertical_sync.tooltip=Управляет режимом вертикальной синхронизации. Выкл: VSync отключён, возможны разрывы изображения. Вкл: Стандартная VSync, ограничивает FPS частотой обновления. Адаптивная: Включает VSync выше частоты обновления, отключает ниже для уменьшения подёргиваний. Доступна только при поддержке драйвера GPU.
+actiniumextra.option.screen_mode=Режим экрана
+actiniumextra.option.screen_mode.tooltip=Оконный: Стандартный оконный режим. Безрамочный: Полноэкранный без монопольного режима, удобное переключение Alt+Tab и мультимонитор. Полноэкранный: Монопольный полноэкранный режим.
+actiniumextra.option.screen_mode.windowed=Оконный
+actiniumextra.option.screen_mode.borderless=Безрамочный
+actiniumextra.option.screen_mode.fullscreen=Полноэкранный
+actiniumextra.option.extra.mod_name_tooltip=Название мода в подсказке
+actiniumextra.option.extra.mod_name_tooltip.tooltip=Показывает название мода-источника внизу подсказки предмета.
+actiniumextra.option.extra.steady_debug_hud=Стабильный отладочный экран
+actiniumextra.option.extra.steady_debug_hud.tooltip=Если включено, отладочный экран будет обновляться раз в заданное число тиков, настраиваемое параметром «Интервал обновления отладочного экрана».
+actiniumextra.option.extra.steady_debug_hud_refresh=Интервал обновления отладочного экрана
+actiniumextra.option.extra.steady_debug_hud_refresh.tooltip=Определяет интервал обновления отладочного экрана в тиках.
+actiniumextra.option.extra.toasts=Уведомления
+actiniumextra.option.extra.toasts.tooltip=Показывает всплывающие уведомления о достижениях и рецептах.
+actiniumextra.option.extra.toast_advancement=Достижения
+actiniumextra.option.extra.toast_advancement.tooltip=Показывает всплывающие уведомления о достижениях.
+actiniumextra.option.extra.toast_recipe=Новые рецепты
+actiniumextra.option.extra.toast_recipe.tooltip=Показывает всплывающие уведомления о рецептах.
+actiniumextra.option.extra.toast_tutorial=Обучающие подсказки
+actiniumextra.option.extra.toast_tutorial.tooltip=Показывает обучающие всплывающие уведомления.
+actiniumextra.option.extra.toast_system=Системные уведомления
+actiniumextra.option.extra.toast_system.tooltip=Показывает системные всплывающие уведомления.
+
+# Overlay Corner Options
+actiniumextra.option.overlay_corner.top_left=Верхний левый
+actiniumextra.option.overlay_corner.top_right=Верхний правый
+actiniumextra.option.overlay_corner.bottom_left=Нижний левый
+actiniumextra.option.overlay_corner.bottom_right=Нижний правый
+
+# Text Contrast Options
+actiniumextra.option.text_contrast.none=Нет
+actiniumextra.option.text_contrast.background=Фон
+actiniumextra.option.text_contrast.shadow=Тень
+
+# Варианты VSync
+actiniumextra.option.vertical_sync.off=Выкл
+actiniumextra.option.vertical_sync.on=Вкл
+actiniumextra.option.vertical_sync.adaptive=Адаптивная
+
+# Overlay Text
+actiniumextra.overlay.fps=%s FPS
+actiniumextra.overlay.fps_extended=(Сред: %s, 1%% Low: %s, 0.1%% Low: %s)
+actiniumextra.overlay.coordinates=X: %s, Y: %s, Z: %s
+actiniumextra.overlay.light_updates=Обновление освещения отключено
