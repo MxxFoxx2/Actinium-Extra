@@ -156,3 +156,15 @@ actiniumextra.overlay.fps=%s FPS
 actiniumextra.overlay.fps_extended=(平均 %s / 1%% Low %s / 0.1%% Low %s)
 actiniumextra.overlay.coordinates=X: %s, Y: %s, Z: %s
 actiniumextra.overlay.light_updates=明るさの更新が無効
+
+# オプション画面のグループ見出し（Actinium のみ表示）
+actiniumextra.option.group.sky=空
+actiniumextra.option.group.colors=色
+actiniumextra.option.group.fog=霧
+actiniumextra.option.group.clouds=雲
+actiniumextra.option.group.lighting=ライティング
+actiniumextra.option.group.entities=エンティティ
+actiniumextra.option.group.overlays=オーバーレイ
+actiniumextra.option.group.interface=インターフェース
+actiniumextra.option.group.toasts=トースト
+actiniumextra.option.group.builtin_particles=組み込みパーティクル

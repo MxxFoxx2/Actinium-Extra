@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -65,6 +66,10 @@ class ActiniumExtraOptionSpecsTest {
         assertEquals(List.of(PARTICLES + "all"), keys(page.groups().get(0)));
         assertEquals(List.of(PARTICLES + "rain_splash", PARTICLES + "block_break",
                 PARTICLES + "block_breaking"), keys(page.groups().get(1)));
+        assertEquals(TextSpec.literalKey("actiniumextra.option.group.builtin_particles"),
+                page.groups().get(1).title());
+        assertTrue(page.groups().get(0).titleText().isEmpty(),
+                "the master particles switch stays in an anonymous group");
 
         OptionSpec.Bool master = assertInstanceOf(OptionSpec.Bool.class, page.groups().get(0).options().get(0));
         assertEquals(OptionSpec.Impact.HIGH, master.impact());
@@ -76,9 +81,12 @@ class ActiniumExtraOptionSpecsTest {
         PageSpec page = ActiniumExtraOptionSpecs.details();
 
         assertEquals(List.of(DETAILS + "sky", DETAILS + "stars", DETAILS + "total_stars",
-                DETAILS + "sun_moon", DETAILS + "rain_snow", DETAILS + "biome_colors",
-                DETAILS + "sky_colors", DETAILS + "void_fog"), keys(page.groups().get(0)));
-        assertEquals(1, page.groups().size());
+                DETAILS + "sun_moon", DETAILS + "rain_snow"), keys(page.groups().get(0)));
+        assertEquals(List.of(DETAILS + "biome_colors", DETAILS + "sky_colors",
+                DETAILS + "void_fog"), keys(page.groups().get(1)));
+        assertEquals(List.of(TextSpec.literalKey("actiniumextra.option.group.sky"),
+                TextSpec.literalKey("actiniumextra.option.group.colors")),
+                page.groups().stream().map(GroupSpec::title).toList());
 
         OptionSpec.Slider stars = assertInstanceOf(OptionSpec.Slider.class, page.groups().get(0).options().get(2));
         assertEquals(500, stars.min());
@@ -90,7 +98,7 @@ class ActiniumExtraOptionSpecsTest {
     }
 
     @Test
-    void renderPageKeepsItsSingleGroupOfFogCloudAndEntityControls() {
+    void renderPageGroupsFogCloudLightingAndEntitiesWithoutReorderingRows() {
         PageSpec page = ActiniumExtraOptionSpecs.render();
 
         assertEquals(List.of(RENDER + "fog", RENDER + "fog_start", RENDER + "fog_distance",
@@ -100,10 +108,16 @@ class ActiniumExtraOptionSpecsTest {
                 RENDER + "item_frame_lod_distance", RENDER + "armor_stands", RENDER + "paintings",
                 RENDER + "beacons", RENDER + "limit_beacon_beam_height", RENDER + "pistons",
                 RENDER + "enchanting_books", RENDER + "player_name_tag", RENDER + "item_frame_name_tag"),
-                keys(page.groups().get(0)));
-        assertEquals(1, page.groups().size());
+                page.groups().stream().flatMap(group -> group.options().stream())
+                        .map(OptionSpec::nameKey).toList());
+        assertEquals(List.of(TextSpec.literalKey("actiniumextra.option.group.fog"),
+                TextSpec.literalKey("actiniumextra.option.group.clouds"),
+                TextSpec.literalKey("actiniumextra.option.group.lighting"),
+                TextSpec.literalKey("actiniumextra.option.group.entities")),
+                page.groups().stream().map(GroupSpec::title).toList());
 
-        List<OptionSpec> rows = page.groups().get(0).options();
+        List<OptionSpec> rows = page.groups().stream()
+                .flatMap(group -> group.options().stream()).toList();
         OptionSpec.Bool modernClouds = assertInstanceOf(OptionSpec.Bool.class, rows.get(5));
         assertEquals(OptionSpec.Flag.REQUIRES_ASSET_RELOAD, modernClouds.flag());
         GateSpec.All gate = assertInstanceOf(GateSpec.All.class, modernClouds.gate());
@@ -131,6 +145,10 @@ class ActiniumExtraOptionSpecsTest {
                 EXTRA + "steady_debug_hud_refresh"), keys(page.groups().get(1)));
         assertEquals(List.of(EXTRA + "toasts", EXTRA + "toast_advancement", EXTRA + "toast_recipe",
                 EXTRA + "toast_tutorial", EXTRA + "toast_system"), keys(page.groups().get(2)));
+        assertEquals(List.of(TextSpec.literalKey("actiniumextra.option.group.overlays"),
+                TextSpec.literalKey("actiniumextra.option.group.interface"),
+                TextSpec.literalKey("actiniumextra.option.group.toasts")),
+                page.groups().stream().map(GroupSpec::title).toList());
 
         OptionSpec cornerSpec = page.groups().get(0).options().get(4);
         assertEquals(OptionSpec.Cycling.class, cornerSpec.getClass());
@@ -194,6 +212,50 @@ class ActiniumExtraOptionSpecsTest {
         assertEquals(ActiniumExtraGameOptions.VerticalSyncOption.class, vsync.type());
         assertEquals(new TextSpec.TranslatableKey("options.vsync"), vsync.name());
         assertEquals(OptionSpec.Impact.VARIES, vsync.impact());
+        // The control must only offer the modes the driver supports. The supplier is deliberately
+        // not called here: it queries GLFW, which needs the game display to exist.
+        assertNotNull(vsync.allowedValues(), "the vsync row must restrict its selectable modes");
+    }
+
+    @Test
+    void everySpecifiedLabelHasAnEnglishTranslation() {
+        Set<String> defined = new HashSet<>();
+        try (java.io.InputStream in = ActiniumExtraOptionSpecsTest.class.getResourceAsStream(
+                "/assets/actiniumextra/lang/en_us.lang")) {
+            assertNotNull(in, "en_us.lang is not on the test classpath");
+            new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8)
+                    .lines()
+                    .filter(line -> line.indexOf('=') >= 0 && !line.startsWith("#"))
+                    .map(line -> line.substring(0, line.indexOf('=')).trim())
+                    .forEach(defined::add);
+        } catch (java.io.IOException e) {
+            throw new AssertionError("could not read en_us.lang", e);
+        }
+
+        List<String> missing = new ArrayList<>();
+        for (PageSpec page : ActiniumExtraOptionSpecs.pages()) {
+            collectMissingKeys(page.title(), defined, missing);
+            page.groups().forEach(group -> {
+                group.titleText().ifPresent(title -> collectMissingKeys(title, defined, missing));
+                group.options().forEach(option -> {
+                    collectMissingKeys(option.name(), defined, missing);
+                    collectMissingKeys(option.tooltip(), defined, missing);
+                });
+            });
+        }
+        ActiniumExtraOptionSpecs.windowRewrites(true).forEach(rewrite -> {
+            collectMissingKeys(rewrite.option().name(), defined, missing);
+            collectMissingKeys(rewrite.option().tooltip(), defined, missing);
+        });
+
+        assertTrue(missing.isEmpty(), () -> "language keys used by the specs but absent from en_us.lang: "
+                + missing);
+    }
+
+    private static void collectMissingKeys(TextSpec text, Set<String> defined, List<String> missing) {
+        if (text instanceof TextSpec.LiteralKey(String key) && !defined.contains(key)) {
+            missing.add(key);
+        }
     }
 
     private static List<StandardRewriteSpec.StandardId> rewriteTargets(boolean provideScreenMode) {

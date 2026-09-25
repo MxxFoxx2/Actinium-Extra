@@ -156,3 +156,15 @@ actiniumextra.overlay.fps=%s FPS
 actiniumextra.overlay.fps_extended=(Сред: %s, 1%% Low: %s, 0.1%% Low: %s)
 actiniumextra.overlay.coordinates=X: %s, Y: %s, Z: %s
 actiniumextra.overlay.light_updates=Обновление освещения отключено
+
+# Заголовки групп страниц (показывает Actinium; Celeritas заголовков не имеет)
+actiniumextra.option.group.sky=Небо
+actiniumextra.option.group.colors=Цвета
+actiniumextra.option.group.fog=Туман
+actiniumextra.option.group.clouds=Облака
+actiniumextra.option.group.lighting=Освещение
+actiniumextra.option.group.entities=Сущности
+actiniumextra.option.group.overlays=Оверлеи
+actiniumextra.option.group.interface=Интерфейс
+actiniumextra.option.group.toasts=Всплывающие уведомления
+actiniumextra.option.group.builtin_particles=Встроенные частицы

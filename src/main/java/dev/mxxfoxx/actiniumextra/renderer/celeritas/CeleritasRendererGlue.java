@@ -130,6 +130,8 @@ public final class CeleritasRendererGlue implements RendererGlue {
         Map<String, Option<?>> built = new HashMap<>();
         List<OptionGroup> groups = new ArrayList<>();
         for (GroupSpec group : page.groups()) {
+            // Celeritas' OptionGroup has no header support, so group titles from the specification
+            // are dropped here on purpose: the same rows in the same order, without the header.
             OptionGroup.Builder builder = OptionGroup.createBuilder();
             for (OptionSpec option : group.options()) {
                 builder.add(toOption(option, built, null));
@@ -187,12 +189,13 @@ public final class CeleritasRendererGlue implements RendererGlue {
     private <T extends Enum<T>> Option<?> toCycling(OptionSpec.Cycling<T> spec,
                                                     Map<String, Option<?>> built,
                                                     StandardRewriteSpec.StandardId standard) {
+        T[] values = spec.values();
         OptionImpl.Builder<ActiniumExtraGameOptions, T> builder = OptionImpl
                 .createBuilder(spec.type(), storage)
                 .setName(text(spec.name()))
                 .setTooltip(text(spec.tooltip()))
-                .setControl(option -> new CyclingControl<>(option, spec.type(),
-                        names(spec.type(), spec.label())))
+                .setControl(option -> new CyclingControl<>(option, values,
+                        names(values, spec.label())))
                 .setBinding(spec.setter(), spec.getter());
         applyShared(builder, spec, built, standard);
         return builder.build();
@@ -283,16 +286,15 @@ public final class CeleritasRendererGlue implements RendererGlue {
     }
 
     /**
-     * @param type  the enum class
-     * @param label the per-constant label
-     * @param <T>   the enum type
-     * @return the cycle labels, in enum declaration order
+     * @param values the constants the control offers, in cycle order
+     * @param label  the per-constant label
+     * @param <T>    the enum type
+     * @return the cycle labels, aligned with {@code values}
      */
-    private static <T extends Enum<T>> TextComponent[] names(Class<T> type, Function<T, String> label) {
-        T[] constants = type.getEnumConstants();
-        TextComponent[] names = new TextComponent[constants.length];
-        for (int i = 0; i < constants.length; i++) {
-            names[i] = TextComponent.literal(label.apply(constants[i]));
+    private static <T extends Enum<T>> TextComponent[] names(T[] values, Function<T, String> label) {
+        TextComponent[] names = new TextComponent[values.length];
+        for (int i = 0; i < values.length; i++) {
+            names[i] = TextComponent.literal(label.apply(values[i]));
         }
         return names;
     }

@@ -33,7 +33,10 @@ On Actinium the adapter binds to `dhj.embeddedt.embeddium.api` — the API mirro
 The layouts are not identical, deliberately:
 
 - Actinium already offers its own windowed / borderless / exclusive fullscreen option, so Actinium Extra does not replace the fullscreen toggle there. On Celeritas, where vanilla's boolean toggle is all there is, the add-on still swaps it for its three-way screen mode control on desktops that can run borderless.
-- The adaptive VSync replacement applies to both renderers, as neither offers adaptive sync.
+- The adaptive VSync replacement applies to both renderers, as neither offers adaptive sync. The control only offers Adaptive when the driver exposes `GLX`/`WGL_EXT_swap_control_tear`, instead of always listing all three modes.
+- Pages are split into headed groups (Fog, Clouds, Lighting, Entities; discovered particle groups are headed by their mod name). Actinium renders those headers through its `OptionGroup` name support; Celeritas has no group headers, so there the same rows appear in the same order without headers.
+
+Two Actinium option-model extensions are deliberately unused because an addon cannot reach them: `Option.shouldHideControl()` has no builder setter and `OptionImpl`'s constructor is private, so no addon can produce an option that reports it; and `setDefaultValue` would need a defaults source, while this mod keeps its defaults in the config's property tables rather than in field initializers.
 
 If neither renderer is installed the mod logs an error during startup and contributes no options: the settings live in the renderer's video settings screen, so there is nowhere to reach them from.
 

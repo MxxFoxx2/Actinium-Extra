@@ -156,3 +156,15 @@ actiniumextra.overlay.fps=%d FPS
 actiniumextra.overlay.fps_extended=(平均: %d, 1%% Low: %d, 0.1%% Low: %d)
 actiniumextra.overlay.coordinates=X: %s, Y: %s, Z: %s
 actiniumextra.overlay.light_updates=光照更新已禁用
+
+# 选项页分组标题（仅 Actinium 显示）
+actiniumextra.option.group.sky=天空
+actiniumextra.option.group.colors=颜色
+actiniumextra.option.group.fog=雾
+actiniumextra.option.group.clouds=云
+actiniumextra.option.group.lighting=光照
+actiniumextra.option.group.entities=实体
+actiniumextra.option.group.overlays=屏幕叠加
+actiniumextra.option.group.interface=界面
+actiniumextra.option.group.toasts=弹窗提示
+actiniumextra.option.group.builtin_particles=内置粒子

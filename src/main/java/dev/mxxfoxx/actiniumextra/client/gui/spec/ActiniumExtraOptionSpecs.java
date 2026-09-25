@@ -48,6 +48,14 @@ public final class ActiniumExtraOptionSpecs {
     /** Language key of the toast switch; the per-type toast switches gate on it. */
     public static final String EXTRA_TOASTS = "actiniumextra.option.extra.toasts";
 
+    /**
+     * @param key the group's short name
+     * @return the language key of a group header
+     */
+    private static TextSpec group(String key) {
+        return TextSpec.literalKey("actiniumextra.option.group." + key);
+    }
+
     private static final String PARTICLE_PAGE_TITLE = "actiniumextra.option.page.particles";
     private static final String PARTICLE_OTHER_TOOLTIP = "actiniumextra.option.particles.other.tooltip";
 
@@ -94,6 +102,7 @@ public final class ActiniumExtraOptionSpecs {
                         TextSpec.literalKey("actiniumextra.option.extra.vertical_sync.tooltip"),
                         ActiniumExtraGameOptions.VerticalSyncOption.class,
                         ActiniumExtraGameOptions.VerticalSyncOption::getLocalizedName,
+                        ActiniumExtraGameOptions.VerticalSyncOption::getAvailableOptions,
                         ActiniumExtraGameOptions.VerticalSyncOption::apply,
                         ActiniumExtraGameOptions.VerticalSyncOption::getCurrent,
                         OptionSpec.Impact.VARIES)));
@@ -160,7 +169,7 @@ public final class ActiniumExtraOptionSpecs {
                 opts -> opts.particleSettings.particles,
                 OptionSpec.Impact.HIGH)));
 
-        groups.add(GroupSpec.of(
+        groups.add(GroupSpec.titled(group("builtin_particles"),
                 OptionSpec.bool("actiniumextra.option.particles.rain_splash",
                         (opts, v) -> opts.particleSettings.rainSplash = v,
                         opts -> opts.particleSettings.rainSplash, particlesOn),
@@ -219,7 +228,7 @@ public final class ActiniumExtraOptionSpecs {
                             opts -> !registry.isClassDisabled(fullClassName),
                             particlesOn));
                 }
-                groups.add(new GroupSpec(List.copyOf(rows)));
+                groups.add(new GroupSpec(List.copyOf(rows), TextSpec.literalText(modId)));
             }
         } catch (Throwable throwable) {
             ActiniumExtraMod.LOGGER.warn("Failed to build dynamic particle toggles", throwable);
@@ -236,7 +245,8 @@ public final class ActiniumExtraOptionSpecs {
     public static PageSpec details() {
         return new PageSpec(ActiniumExtraOptionPages.DETAILS,
                 TextSpec.literalKey("actiniumextra.option.page.details"),
-                List.of(GroupSpec.of(
+                List.of(
+                        GroupSpec.titled(group("sky"),
                         OptionSpec.bool("actiniumextra.option.details.sky",
                                 (opts, v) -> opts.detailSettings.sky = v,
                                 opts -> opts.detailSettings.sky,
@@ -257,7 +267,9 @@ public final class ActiniumExtraOptionSpecs {
                                 OptionSpec.Flag.REQUIRES_RENDERER_RELOAD),
                         OptionSpec.bool("actiniumextra.option.details.rain_snow",
                                 (opts, v) -> opts.detailSettings.rainSnow = v,
-                                opts -> opts.detailSettings.rainSnow),
+                                opts -> opts.detailSettings.rainSnow)
+                        ),
+                        GroupSpec.titled(group("colors"),
                         OptionSpec.bool("actiniumextra.option.details.biome_colors",
                                 (opts, v) -> opts.detailSettings.biomeColors = v,
                                 opts -> opts.detailSettings.biomeColors,
@@ -282,7 +294,8 @@ public final class ActiniumExtraOptionSpecs {
 
         return new PageSpec(ActiniumExtraOptionPages.RENDER,
                 TextSpec.literalKey("actiniumextra.option.page.render"),
-                List.of(GroupSpec.of(
+                List.of(
+                        GroupSpec.titled(group("fog"),
                         OptionSpec.bool("actiniumextra.option.render.fog",
                                 (opts, v) -> opts.renderSettings.fog = v,
                                 opts -> opts.renderSettings.fog),
@@ -296,7 +309,9 @@ public final class ActiniumExtraOptionSpecs {
                                 opts -> opts.renderSettings.fogDistance, fogOn),
                         OptionSpec.bool("actiniumextra.option.render.prevent_shaders",
                                 (opts, v) -> opts.renderSettings.preventShaders = v,
-                                opts -> opts.renderSettings.preventShaders),
+                                opts -> opts.renderSettings.preventShaders)
+                        ),
+                        GroupSpec.titled(group("clouds"),
                         OptionSpec.bool(RENDER_CLOUDS,
                                 (opts, v) -> opts.renderSettings.clouds = v,
                                 opts -> opts.renderSettings.clouds),
@@ -327,11 +342,15 @@ public final class ActiniumExtraOptionSpecs {
                                 ActiniumExtraGameOptions.CloudTranslucency.class,
                                 ActiniumExtraGameOptions.CloudTranslucency::getLocalizedName,
                                 (opts, value) -> opts.renderSettings.cloudTranslucency = value,
-                                opts -> opts.renderSettings.cloudTranslucency, cloudsOn),
+                                opts -> opts.renderSettings.cloudTranslucency, cloudsOn)
+                        ),
+                        GroupSpec.titled(group("lighting"),
                         OptionSpec.bool("actiniumextra.option.render.light_updates",
                                 (opts, v) -> opts.renderSettings.lightUpdates = v,
                                 opts -> opts.renderSettings.lightUpdates,
-                                OptionSpec.Impact.HIGH),
+                                OptionSpec.Impact.HIGH)
+                        ),
+                        GroupSpec.titled(group("entities"),
                         OptionSpec.bool(RENDER_ITEM_FRAMES,
                                 (opts, v) -> opts.renderSettings.itemFrames = v,
                                 opts -> opts.renderSettings.itemFrames),
@@ -378,7 +397,7 @@ public final class ActiniumExtraOptionSpecs {
         return new PageSpec(ActiniumExtraOptionPages.EXTRA,
                 TextSpec.literalKey("actiniumextra.option.page.extra"),
                 List.of(
-                        GroupSpec.of(
+                        GroupSpec.titled(group("overlays"),
                                 OptionSpec.bool(EXTRA_FPS,
                                         (opts, v) -> opts.extraSettings.showFps = v,
                                         opts -> opts.extraSettings.showFps),
@@ -402,7 +421,7 @@ public final class ActiniumExtraOptionSpecs {
                                         ActiniumExtraGameOptions.TextContrast::getLocalizedName,
                                         (opts, value) -> opts.extraSettings.textContrast = value,
                                         opts -> opts.extraSettings.textContrast)),
-                        GroupSpec.of(
+                        GroupSpec.titled(group("interface"),
                                 OptionSpec.bool("actiniumextra.option.extra.mod_name_tooltip",
                                         (opts, v) -> opts.extraSettings.modNameTooltip = v,
                                         opts -> opts.extraSettings.modNameTooltip),
@@ -417,7 +436,7 @@ public final class ActiniumExtraOptionSpecs {
                                         (opts, v) -> opts.extraSettings.steadyDebugHudRefreshInterval = v,
                                         opts -> opts.extraSettings.steadyDebugHudRefreshInterval,
                                         GateSpec.key(EXTRA_STEADY_DEBUG_HUD))),
-                        GroupSpec.of(
+                        GroupSpec.titled(group("toasts"),
                                 OptionSpec.bool(EXTRA_TOASTS,
                                         (opts, v) -> opts.extraSettings.toasts = v,
                                         opts -> opts.extraSettings.toasts),

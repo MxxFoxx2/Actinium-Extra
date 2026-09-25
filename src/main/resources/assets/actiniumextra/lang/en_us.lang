@@ -156,3 +156,15 @@ actiniumextra.overlay.fps=%s FPS
 actiniumextra.overlay.fps_extended=(avg. %s / 1%% low %s / 0.1%% low %s)
 actiniumextra.overlay.coordinates=X: %s, Y: %s, Z: %s
 actiniumextra.overlay.light_updates=Light updates disabled
+
+# Option page group headers (rendered by Actinium; Celeritas has no group headers)
+actiniumextra.option.group.sky=Sky
+actiniumextra.option.group.colors=Colors
+actiniumextra.option.group.fog=Fog
+actiniumextra.option.group.clouds=Clouds
+actiniumextra.option.group.lighting=Lighting
+actiniumextra.option.group.entities=Entities
+actiniumextra.option.group.overlays=Overlays
+actiniumextra.option.group.interface=Interface
+actiniumextra.option.group.toasts=Toasts
+actiniumextra.option.group.builtin_particles=Built-in particles

@@ -4,6 +4,7 @@ import dev.mxxfoxx.actiniumextra.client.gui.ActiniumExtraGameOptions;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * A renderer-independent description of one option row in the video-settings UI.
@@ -47,6 +48,20 @@ public sealed interface OptionSpec {
      * @return the gate, never {@code null}
      */
     GateSpec gate();
+
+    /**
+     * The row label.
+     *
+     * @return the label text specification
+     */
+    TextSpec name();
+
+    /**
+     * The row tooltip.
+     *
+     * @return the tooltip text specification
+     */
+    TextSpec tooltip();
 
     /**
      * Boolean toggle backed by a {@code TickBoxControl}, named {@code key} with its tooltip read
@@ -169,7 +184,7 @@ public sealed interface OptionSpec {
                                                  BiConsumer<ActiniumExtraGameOptions, T> setter,
                                                  Function<ActiniumExtraGameOptions, T> getter) {
         return cycling(key, TextSpec.literalKey(key), TextSpec.literalKey(key + ".tooltip"),
-                type, label, setter, getter, Impact.NONE);
+                type, label, null, setter, getter, Impact.NONE);
     }
 
     /** Enum cycle that greys out with its parent option. */
@@ -180,19 +195,27 @@ public sealed interface OptionSpec {
                                                  Function<ActiniumExtraGameOptions, T> getter,
                                                  GateSpec gate) {
         return new Cycling<>(key, TextSpec.literalKey(key), TextSpec.literalKey(key + ".tooltip"),
-                type, label, setter, getter, Flag.NONE, Impact.NONE, gate);
+                type, label, null, setter, getter, Flag.NONE, Impact.NONE, gate);
     }
 
-    /** Enum cycle with fully explicit texts, used where the label is a vanilla language key. */
+    /**
+     * Enum cycle with fully explicit texts and a restricted set of selectable values, used where the
+     * label is a vanilla language key and some constants are unavailable at runtime.
+     *
+     * @param allowedValues which constants the control may cycle through, or {@code null} for every
+     *                      constant of {@code type}; evaluated when the page is built, so a value
+     *                      set that depends on the running display stays out of the unit tests
+     */
     static <T extends Enum<T>> Cycling<T> cycling(String key,
                                                  TextSpec name,
                                                  TextSpec tooltip,
                                                  Class<T> type,
                                                  Function<T, String> label,
+                                                 Supplier<T[]> allowedValues,
                                                  BiConsumer<ActiniumExtraGameOptions, T> setter,
                                                  Function<ActiniumExtraGameOptions, T> getter,
                                                  Impact impact) {
-        return new Cycling<>(key, name, tooltip, type, label, setter, getter,
+        return new Cycling<>(key, name, tooltip, type, label, allowedValues, setter, getter,
                 Flag.NONE, impact, GateSpec.always());
     }
 
@@ -279,27 +302,36 @@ public sealed interface OptionSpec {
     /**
      * An enum cycling row.
      *
-     * @param nameKey identity; derived from the enum type because these rows have no per-option key
-     * @param name    row label
-     * @param tooltip row tooltip
-     * @param type    the enum class
-     * @param label   how each constant is labelled
-     * @param setter  writes the value into the addon config
-     * @param getter  reads the value from the addon config
-     * @param flag    reload side effect
-     * @param impact  performance hint
-     * @param gate    enable condition
-     * @param <T>     the enum type
+     * @param nameKey       identity; the default language key of the row
+     * @param name          row label
+     * @param tooltip       row tooltip
+     * @param type          the enum class
+     * @param label         how each constant is labelled
+     * @param allowedValues the constants the control may cycle through, or {@code null} for every
+     *                      constant of {@code type}
+     * @param setter        writes the value into the addon config
+     * @param getter        reads the value from the addon config
+     * @param flag          reload side effect
+     * @param impact        performance hint
+     * @param gate          enable condition
+     * @param <T>           the enum type
      */
     record Cycling<T extends Enum<T>>(String nameKey,
                                       TextSpec name,
                                       TextSpec tooltip,
                                       Class<T> type,
                                       Function<T, String> label,
+                                      Supplier<T[]> allowedValues,
                                       BiConsumer<ActiniumExtraGameOptions, T> setter,
                                       Function<ActiniumExtraGameOptions, T> getter,
                                       Flag flag,
                                       Impact impact,
                                       GateSpec gate) implements OptionSpec {
+        /**
+         * @return every constant the control should offer, in the order its labels are built
+         */
+        public T[] values() {
+            return allowedValues != null ? allowedValues.get() : type.getEnumConstants();
+        }
     }
 }
