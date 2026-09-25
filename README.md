@@ -1,6 +1,6 @@
 # Actinium Extra
 
-Actinium Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases) and [Actinium](https://github.com/DHJComical/Actinium), built to run on Cleanroom. It adds more graphics, particle, HUD, and window settings to the renderer's video settings screen.
+Actinium Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build) and [Actinium](https://github.com/DHJComical/Actinium), built to run on Cleanroom. It adds more graphics, particle, HUD, and window settings to the renderer's video settings screen.
 
 The mod started as a port of features from Sodium Extra and Rubidium/Embeddium Extra. It also includes several additions and backports made specifically for the Cleanroom environment.
 
@@ -27,6 +27,8 @@ The mod id changed from `celeritasextra` to `actiniumextra`, so the game treats 
 ## Renderer support
 
 Celeritas and Actinium expose the same option model under different package names, and each renderer only accepts its own classes in its settings screen. Actinium Extra therefore describes the pages it contributes once and converts them with a small adapter per renderer, picking the adapter from the mod that is actually installed. One jar covers both.
+
+On Actinium the adapter binds to `dhj.embeddedt.embeddium.api` — the API mirror under `org.taumc.celeritas` and the `celeritas` mod id were removed from Actinium, so nothing here depends on them. Every mixin also targets only vanilla Minecraft and Forge classes, never renderer internals, so a renderer refactor cannot break the add-on's features by renaming a class.
 
 The layouts are not identical, deliberately:
 
