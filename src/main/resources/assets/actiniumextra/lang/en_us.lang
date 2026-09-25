@@ -168,3 +168,17 @@ actiniumextra.option.group.overlays=Overlays
 actiniumextra.option.group.interface=Interface
 actiniumextra.option.group.toasts=Toasts
 actiniumextra.option.group.builtin_particles=Built-in particles
+
+# Screen effects, HUD element toggles, memory overlay
+actiniumextra.option.group.screen=Screen effects
+actiniumextra.option.render.damage_tilt=Damage tilt
+actiniumextra.option.render.damage_tilt.tooltip=Tilts the camera while you are taking damage.
+actiniumextra.option.extra.ram=Memory usage
+actiniumextra.option.extra.ram.tooltip=Shows Java heap usage in the overlay.
+actiniumextra.option.extra.boss_health=Boss health bar
+actiniumextra.option.extra.boss_health.tooltip=Shows the boss health bar at the top of the screen.
+actiniumextra.option.extra.scoreboard=Scoreboard sidebar
+actiniumextra.option.extra.scoreboard.tooltip=Shows the scoreboard sidebar on the right of the screen.
+actiniumextra.option.extra.potion_icons=Potion icons
+actiniumextra.option.extra.potion_icons.tooltip=Shows active effect icons above the hotbar.
+actiniumextra.overlay.ram=Memory: %s / %s MB

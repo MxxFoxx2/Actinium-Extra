@@ -168,3 +168,17 @@ actiniumextra.option.group.overlays=Оверлеи
 actiniumextra.option.group.interface=Интерфейс
 actiniumextra.option.group.toasts=Всплывающие уведомления
 actiniumextra.option.group.builtin_particles=Встроенные частицы
+
+# Эффекты экрана, элементы интерфейса, память в оверлее
+actiniumextra.option.group.screen=Эффекты экрана
+actiniumextra.option.render.damage_tilt=Наклон камеры при уроне
+actiniumextra.option.render.damage_tilt.tooltip=Наклоняет камеру, когда вы получаете урон.
+actiniumextra.option.extra.ram=Использование памяти
+actiniumextra.option.extra.ram.tooltip=Показывает использование кучи Java в оверлее.
+actiniumextra.option.extra.boss_health=Полоса здоровья босса
+actiniumextra.option.extra.boss_health.tooltip=Показывает полосу здоровья босса вверху экрана.
+actiniumextra.option.extra.scoreboard=Таблица результатов
+actiniumextra.option.extra.scoreboard.tooltip=Показывает боковую таблицу результатов справа.
+actiniumextra.option.extra.potion_icons=Значки эффектов
+actiniumextra.option.extra.potion_icons.tooltip=Показывает значки активных эффектов над панелью предметов.
+actiniumextra.overlay.ram=Память: %s / %s МБ

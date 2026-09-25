@@ -168,3 +168,17 @@ actiniumextra.option.group.overlays=オーバーレイ
 actiniumextra.option.group.interface=インターフェース
 actiniumextra.option.group.toasts=トースト
 actiniumextra.option.group.builtin_particles=組み込みパーティクル
+
+# 画面効果、HUD 要素、メモリ表示
+actiniumextra.option.group.screen=画面効果
+actiniumextra.option.render.damage_tilt=被ダメージ時の画面傾き
+actiniumextra.option.render.damage_tilt.tooltip=ダメージを受けるとカメラが傾きます。
+actiniumextra.option.extra.ram=メモリ使用量
+actiniumextra.option.extra.ram.tooltip=オーバーレイに Java ヒープの使用量を表示します。
+actiniumextra.option.extra.boss_health=ボスの体力バー
+actiniumextra.option.extra.boss_health.tooltip=画面上部にボスの体力バーを表示します。
+actiniumextra.option.extra.scoreboard=スコアボード
+actiniumextra.option.extra.scoreboard.tooltip=画面右側にスコアボードのサイドバーを表示します。
+actiniumextra.option.extra.potion_icons=ポーションアイコン
+actiniumextra.option.extra.potion_icons.tooltip=有効な効果のアイコンをホットバー上に表示します。
+actiniumextra.overlay.ram=メモリ: %s / %s MB

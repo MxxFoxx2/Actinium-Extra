@@ -26,6 +26,7 @@
     "render.block_entity.MixinTileEntityEnchantmentTableRenderer",
     "render.block_entity.MixinTileEntityPistonRenderer",
     "render.weather.MixinEntityRendererWeather",
+    "render.effects.MixinEntityRendererDamageTilt",
     "render.sky.MixinRenderGlobalClouds",
     "render.sky.MixinCloudRenderer",
     "render.sky.MixinCloudResources",

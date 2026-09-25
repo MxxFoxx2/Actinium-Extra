@@ -107,6 +107,8 @@ public class ActiniumExtraGameOptions {
                     v -> renderSettings.playerNameTag = v, () -> renderSettings.playerNameTag),
             new BooleanProperty(CAT_RENDER, "itemFrameNameTag", true, "Enable/disable item frame name tag rendering",
                     v -> renderSettings.itemFrameNameTag = v, () -> renderSettings.itemFrameNameTag),
+            new BooleanProperty(CAT_RENDER, "damageTilt", true, "Enable/disable the camera tilt when hurt",
+                    v -> renderSettings.damageTilt = v, () -> renderSettings.damageTilt),
             new BooleanProperty(CAT_RENDER, "preventShaders", false, "Prevent accidental shader activation",
                     v -> renderSettings.preventShaders = v, () -> renderSettings.preventShaders),
             // Extra settings
@@ -116,6 +118,14 @@ public class ActiniumExtraGameOptions {
                     v -> extraSettings.showFPSExtended = v, () -> extraSettings.showFPSExtended),
             new BooleanProperty(CAT_EXTRA, "showCoords", false, "Show coordinates overlay",
                     v -> extraSettings.showCoords = v, () -> extraSettings.showCoords),
+            new BooleanProperty(CAT_EXTRA, "showRam", false, "Show memory usage overlay",
+                    v -> extraSettings.showRam = v, () -> extraSettings.showRam),
+            new BooleanProperty(CAT_EXTRA, "showBossHealth", true, "Show the boss health bar",
+                    v -> extraSettings.showBossHealth = v, () -> extraSettings.showBossHealth),
+            new BooleanProperty(CAT_EXTRA, "showScoreboard", true, "Show the scoreboard sidebar",
+                    v -> extraSettings.showScoreboard = v, () -> extraSettings.showScoreboard),
+            new BooleanProperty(CAT_EXTRA, "showPotionIcons", true, "Show potion effect icons",
+                    v -> extraSettings.showPotionIcons = v, () -> extraSettings.showPotionIcons),
             new BooleanProperty(CAT_EXTRA, "ignoreReducedDebugInfo", false, "Ignore reduced debug info gamerule",
                     v -> extraSettings.ignoreReducedDebugInfo = v, () -> extraSettings.ignoreReducedDebugInfo),
             new BooleanProperty(CAT_EXTRA, "steadyDebugHud", ExtraSettings.STEADY_DEBUG_HUD_DEFAULT,
@@ -515,6 +525,7 @@ public class ActiniumExtraGameOptions {
         public boolean beacons = true;
         public boolean limitBeaconBeamHeight = false;
         public boolean enchantingTableBooks = true;
+        public boolean damageTilt = true;
         public boolean playerNameTag = true;
         public boolean itemFrameNameTag = true;
         public boolean preventShaders = false;
@@ -534,6 +545,10 @@ public class ActiniumExtraGameOptions {
         public boolean showFps = false;
         public boolean showFPSExtended = true;
         public boolean showCoords = false;
+        public boolean showRam = false;
+        public boolean showBossHealth = true;
+        public boolean showScoreboard = true;
+        public boolean showPotionIcons = true;
         public boolean ignoreReducedDebugInfo = false;
         public boolean useAdaptiveSync = false;
         public OverlayCorner overlayCorner = OverlayCorner.TOP_LEFT;

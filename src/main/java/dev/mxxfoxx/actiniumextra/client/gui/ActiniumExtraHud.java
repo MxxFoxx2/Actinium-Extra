@@ -81,6 +81,14 @@ public class ActiniumExtraHud {
             }
         }
 
+        // Memory usage display
+        if (settings.showRam) {
+            Runtime runtime = Runtime.getRuntime();
+            long usedMb = (runtime.totalMemory() - runtime.freeMemory()) >> 20;
+            long maxMb = runtime.maxMemory() >> 20;
+            lines.add(I18n.format("actiniumextra.overlay.ram", usedMb, maxMb));
+        }
+
         // Light updates disabled warning
         if (!ActiniumExtraClientMod.options().renderSettings.lightUpdates) {
             lines.add(I18n.format("actiniumextra.overlay.light_updates"));

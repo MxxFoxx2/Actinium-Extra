@@ -168,3 +168,17 @@ actiniumextra.option.group.overlays=屏幕叠加
 actiniumextra.option.group.interface=界面
 actiniumextra.option.group.toasts=弹窗提示
 actiniumextra.option.group.builtin_particles=内置粒子
+
+# 屏幕效果、HUD 元素、内存显示
+actiniumextra.option.group.screen=屏幕效果
+actiniumextra.option.render.damage_tilt=受伤视角倾斜
+actiniumextra.option.render.damage_tilt.tooltip=受到伤害时视角会倾斜。
+actiniumextra.option.extra.ram=内存占用
+actiniumextra.option.extra.ram.tooltip=在信息层显示 Java 堆内存的使用情况。
+actiniumextra.option.extra.boss_health=Boss 血量条
+actiniumextra.option.extra.boss_health.tooltip=在屏幕顶部显示 Boss 血量条。
+actiniumextra.option.extra.scoreboard=计分板
+actiniumextra.option.extra.scoreboard.tooltip=在屏幕右侧显示计分板侧边栏。
+actiniumextra.option.extra.potion_icons=药水图标
+actiniumextra.option.extra.potion_icons.tooltip=在快捷栏上方显示生效中的药水图标。
+actiniumextra.overlay.ram=内存：%s / %s MB

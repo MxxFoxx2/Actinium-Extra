@@ -102,34 +102,37 @@ class ActiniumExtraOptionSpecsTest {
         PageSpec page = ActiniumExtraOptionSpecs.render();
 
         assertEquals(List.of(RENDER + "fog", RENDER + "fog_start", RENDER + "fog_distance",
-                RENDER + "prevent_shaders", RENDER + "clouds", RENDER + "modern_clouds",
-                RENDER + "cloud_height", RENDER + "cloud_distance", RENDER + "cloud_scale",
-                RENDER + "cloud_translucency", RENDER + "light_updates", RENDER + "item_frames",
+                RENDER + "prevent_shaders", RENDER + "damage_tilt", RENDER + "clouds",
+                RENDER + "modern_clouds", RENDER + "cloud_height", RENDER + "cloud_distance",
+                RENDER + "cloud_scale", RENDER + "cloud_translucency", RENDER + "light_updates",
+                RENDER + "item_frames",
                 RENDER + "item_frame_lod_distance", RENDER + "armor_stands", RENDER + "paintings",
                 RENDER + "beacons", RENDER + "limit_beacon_beam_height", RENDER + "pistons",
                 RENDER + "enchanting_books", RENDER + "player_name_tag", RENDER + "item_frame_name_tag"),
                 page.groups().stream().flatMap(group -> group.options().stream())
                         .map(OptionSpec::nameKey).toList());
         assertEquals(List.of(TextSpec.literalKey("actiniumextra.option.group.fog"),
+                TextSpec.literalKey("actiniumextra.option.group.screen"),
                 TextSpec.literalKey("actiniumextra.option.group.clouds"),
                 TextSpec.literalKey("actiniumextra.option.group.lighting"),
                 TextSpec.literalKey("actiniumextra.option.group.entities")),
                 page.groups().stream().map(GroupSpec::title).toList());
 
-        List<OptionSpec> rows = page.groups().stream()
-                .flatMap(group -> group.options().stream()).toList();
-        OptionSpec.Bool modernClouds = assertInstanceOf(OptionSpec.Bool.class, rows.get(5));
+        OptionSpec.Bool modernClouds = assertInstanceOf(OptionSpec.Bool.class,
+                byKey(page, RENDER + "modern_clouds"));
         assertEquals(OptionSpec.Flag.REQUIRES_ASSET_RELOAD, modernClouds.flag());
         GateSpec.All gate = assertInstanceOf(GateSpec.All.class, modernClouds.gate());
         assertEquals(List.of(new GateSpec.ByKey(RENDER + "clouds")),
                 gate.gates().stream().filter(GateSpec.ByKey.class::isInstance).toList());
         assertEquals(1, gate.gates().stream().filter(GateSpec.Live.class::isInstance).count());
 
-        OptionSpec.Slider cloudHeight = assertInstanceOf(OptionSpec.Slider.class, rows.get(6));
+        OptionSpec.Slider cloudHeight = assertInstanceOf(OptionSpec.Slider.class,
+                byKey(page, RENDER + "cloud_height"));
         assertEquals(ActiniumExtraGameOptions.RenderSettings.USE_WORLD_CLOUD_HEIGHT, cloudHeight.min());
         assertEquals(384, cloudHeight.max());
 
-        OptionSpec.Slider cloudScale = assertInstanceOf(OptionSpec.Slider.class, rows.get(8));
+        OptionSpec.Slider cloudScale = assertInstanceOf(OptionSpec.Slider.class,
+                byKey(page, RENDER + "cloud_scale"));
         assertEquals(ActiniumExtraGameOptions.RenderSettings.CLOUD_SCALE_MIN, cloudScale.min());
         assertEquals(ActiniumExtraGameOptions.RenderSettings.CLOUD_SCALE_MAX, cloudScale.max());
     }
@@ -138,11 +141,12 @@ class ActiniumExtraOptionSpecsTest {
     void extraPageKeepsItsOverlayMiscellaneousAndToastGroups() {
         PageSpec page = ActiniumExtraOptionSpecs.extra();
 
-        assertEquals(List.of(EXTRA + "fps", EXTRA + "fps_extended", EXTRA + "coords",
+        assertEquals(List.of(EXTRA + "fps", EXTRA + "fps_extended", EXTRA + "coords", EXTRA + "ram",
                 EXTRA + "ignore_reduced_debug_info", EXTRA + "overlay_corner", EXTRA + "text_contrast"),
                 keys(page.groups().get(0)));
-        assertEquals(List.of(EXTRA + "mod_name_tooltip", EXTRA + "steady_debug_hud",
-                EXTRA + "steady_debug_hud_refresh"), keys(page.groups().get(1)));
+        assertEquals(List.of(EXTRA + "mod_name_tooltip", EXTRA + "boss_health", EXTRA + "scoreboard",
+                EXTRA + "potion_icons", EXTRA + "steady_debug_hud", EXTRA + "steady_debug_hud_refresh"),
+                keys(page.groups().get(1)));
         assertEquals(List.of(EXTRA + "toasts", EXTRA + "toast_advancement", EXTRA + "toast_recipe",
                 EXTRA + "toast_tutorial", EXTRA + "toast_system"), keys(page.groups().get(2)));
         assertEquals(List.of(TextSpec.literalKey("actiniumextra.option.group.overlays"),
@@ -150,7 +154,7 @@ class ActiniumExtraOptionSpecsTest {
                 TextSpec.literalKey("actiniumextra.option.group.toasts")),
                 page.groups().stream().map(GroupSpec::title).toList());
 
-        OptionSpec cornerSpec = page.groups().get(0).options().get(4);
+        OptionSpec cornerSpec = byKey(page, EXTRA + "overlay_corner");
         assertEquals(OptionSpec.Cycling.class, cornerSpec.getClass());
         OptionSpec.Cycling<?> corner = (OptionSpec.Cycling<?>) cornerSpec;
         assertEquals(ActiniumExtraGameOptions.OverlayCorner.class, corner.type());
@@ -291,6 +295,21 @@ class ActiniumExtraOptionSpecsTest {
                 // A live gate reads an addon-side condition, not another row.
             }
         }
+    }
+
+    /**
+     * Finds a row by its identity key, so re-grouping a page does not shift index-based assertions.
+     *
+     * @param page the page to search
+     * @param key  the row's identity key
+     * @return the row specification
+     */
+    private static OptionSpec byKey(PageSpec page, String key) {
+        return page.groups().stream()
+                .flatMap(group -> group.options().stream())
+                .filter(option -> option.nameKey().equals(key))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("no such option row: " + key));
     }
 
     private static List<String> keys(GroupSpec group) {
