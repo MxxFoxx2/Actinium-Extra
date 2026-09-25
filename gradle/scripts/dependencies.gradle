@@ -22,11 +22,25 @@ dependencies {
         compileOnly "com.cleanroommc:lwjglx:1.0.0"
     }
 
-    // Celeritas compile dependency (place the Celeritas development jar in libs/).
-    // Use a runnable/remapped Celeritas jar in run/client/mods for integration testing; the
-    // development artifact is intentionally not bundled or forced onto the runtime classpath.
+    // Renderer compile dependencies (place the development or release jars in libs/).
+    // Celeritas and Actinium expose the same option model under different package names, so both
+    // jars can sit on the compile classpath at once; each renderer adapter in
+    // jp.s12kuma01.celeritasextra.renderer binds to one of them and is only loaded at runtime when
+    // its renderer is installed. Neither jar is bundled or forced onto the runtime classpath.
+    // For integration testing, put a runnable/remapped renderer jar in run/client/mods instead;
+    // which renderer is in that directory is what selects the adapter at runtime.
     fileTree(dir: 'libs', include: ['*.jar']).each { jar ->
         modCompileOnly files(jar)
+    }
+
+    // Actinium support is compiled into every artifact, so its jar is not optional at build time.
+    // Fetch it with:
+    //   curl -L -o libs/actinium-${actinium_api_version}.jar \
+    //     https://github.com/DHJComical/Actinium/releases/download/${actinium_api_version}/Actinium-${actinium_api_version}.jar
+    if (fileTree(dir: 'libs', include: ['actinium-*.jar']).isEmpty()) {
+        throw new GradleException("No Actinium jar found in libs/. Celeritas Extra compiles an Actinium " +
+                "renderer adapter into every build, so download Actinium ${actinium_api_version} (see README) " +
+                "into libs/ and build again.")
     }
 
     // Example - Dependency descriptor:

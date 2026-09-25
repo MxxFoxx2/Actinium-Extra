@@ -1,17 +1,48 @@
-# Celeritas/Actinium Extra
+# Celeritas Extra
 
-Celeritas/Actinium Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build) and [Actinium](https://github.com/DHJComical/Actinium/blob/main/README.en.md), built to run on Cleanroom. It adds more graphics, particle, HUD, and window settings to the Celeritas/Actinium video settings screen.
+Celeritas Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases) and [Actinium](https://github.com/DHJComical/Actinium), built to run on Cleanroom. It adds more graphics, particle, HUD, and window settings to the renderer's video settings screen.
 
 The mod started as a port of features from Sodium Extra and Rubidium/Embeddium Extra. It also includes several additions and backports made specifically for the Cleanroom environment.
 
 ## Requirements
 
 - [Cleanroom Loader](https://github.com/CleanroomMC/Cleanroom) 0.6.10-alpha or newer
-* [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build) 2.4.0 or newer, or [Actinium](https://github.com/DHJComical/Actinium) alpha-0.0.9 or newer
-  
+- One of:
+  - [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build/releases) 2.4.0 or newer
+  - [Actinium](https://github.com/DHJComical/Actinium) alpha-0.0.10 or newer
+
 ### Optional dependency
 
 - [AssetMover](https://github.com/CleanroomMC/AssetMover) 2.5 or newer unlocks Modern Clouds.
+
+## Renderer support
+
+Celeritas and Actinium expose the same option model under different package names, and each renderer only accepts its own classes in its settings screen. Celeritas Extra therefore describes the pages it contributes once and converts them with a small adapter per renderer, picking the adapter from the mod that is actually installed. One jar covers both.
+
+The layouts are not identical, deliberately:
+
+- Actinium already offers its own windowed / borderless / exclusive fullscreen option, so Celeritas Extra does not replace the fullscreen toggle there. On Celeritas, where vanilla's boolean toggle is all there is, the add-on still swaps it for its three-way screen mode control on desktops that can run borderless.
+- The adaptive VSync replacement applies to both renderers, as neither offers adaptive sync.
+
+If neither renderer is installed the mod logs an error during startup and contributes no options: the settings live in the renderer's video settings screen, so there is nowhere to reach them from.
+
+## Building
+
+The renderer adapters are compiled into every build, so both renderer API jars must be on the compile classpath. Place them in `libs/` (the Celeritas jar is committed; the Actinium jar is not):
+
+```bash
+version=$(grep -m1 '^actinium_api_version *=' gradle.properties | cut -d= -f2 | tr -d ' ')
+curl -L -o "libs/actinium-${version}.jar" \
+  "https://github.com/DHJComical/Actinium/releases/download/${version}/Actinium-${version}.jar"
+```
+
+Then run `./gradlew build`. Bumping the pinned `actinium_api_version` in `gradle.properties` is the only step needed to compile against a newer Actinium release.
+
+To try either renderer in a dev run, put a runnable copy of it into `run/client/mods`; that is also what selects the renderer adapter at runtime.
+
+## Testing
+
+`./gradlew test` runs the unit tests, including the checks that pin the contributed option pages, so a page layout change has to be deliberate. Renderer attachment itself is verified in game: open the video settings and confirm the five Celeritas Extra pages appear, and on Actinium that the fullscreen row is still Actinium's own window-mode option.
 
 ## Features
 
@@ -31,13 +62,13 @@ The mod started as a port of features from Sodium Extra and Rubidium/Embeddium E
 - FlashyReese, creator of Sodium Extra
 - dima_dencep, creator of Rubidium and Embeddium Extra
 - embeddedt, creator of Celeritas
-- DHJComical, creator of Actinium
+- DHJComical and the Actinium contributors, whose renderer this add-on also attaches to
 - CleanroomMC, for Cleanroom Loader, CleanroomModTemplate, and related tools
 - Everyone who has contributed translations
 
 ## License
 
-Celeritas/Actinium Extra is licensed under the [LGPL-3.0](LICENSE.md).
+Celeritas Extra is licensed under the [LGPL-3.0](LICENSE.md).
 
 ## AI usage
 

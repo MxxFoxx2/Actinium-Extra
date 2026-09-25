@@ -21,6 +21,11 @@ jobs:
         name: Set up Gradle
       - name: Add permission
         run: chmod +x ./gradlew
+      - name: Download Actinium renderer API jar
+        run: |
+          version=$(grep -m1 '^actinium_api_version *=' gradle.properties | cut -d= -f2 | tr -d ' ')
+          curl -sfL -o "libs/actinium-${version}.jar" \
+            "https://github.com/DHJComical/Actinium/releases/download/${version}/Actinium-${version}.jar"
       - name: Execute Gradle build
         run: ./gradlew build
 

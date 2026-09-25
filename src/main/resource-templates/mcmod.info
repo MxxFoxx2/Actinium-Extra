@@ -9,7 +9,6 @@
 	"url": "{{ mod_url }}",
 	"updateJSON": "{{ mod_update_json }}",
 	"logoFile": "{{ mod_logo_path }}",
-	"dependencies": ["celeritas"],
 	"modProperties": {
 		"issueTrackerUrl": "{{ mod_issue_tracker }}"
 	}

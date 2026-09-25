@@ -49,6 +49,9 @@ usernamecache.json
 # Note: libs/celeritas-forge-mc12.2-*.jar should be committed as a dependency
 # Uncomment below if you want to exclude it:
 # /libs/*.jar
+# The Actinium renderer API jar is downloaded by CI and by the build instructions in the README
+# (it is re-released often, so it is not committed); keep libs/celeritas-*.jar in git.
+/libs/actinium-*.jar
 *.jar.cache
 
 # Config files (generated at runtime)

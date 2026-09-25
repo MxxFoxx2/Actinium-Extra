@@ -7,12 +7,20 @@ import java.lang.reflect.Modifier;
 import java.nio.IntBuffer;
 import java.util.Locale;
 
-/** Gates the desktop screen-mode control without querying the native window. */
-final class WindowModeSupport {
+/**
+ * Gates the desktop screen-mode control without querying the native window.
+ * <p>
+ * Read by {@link jp.s12kuma01.celeritasextra.renderer.RendererGlue} when it decides whether the
+ * addon should replace the renderer's fullscreen toggle.
+ */
+public final class WindowModeSupport {
     private WindowModeSupport() {
     }
 
-    static boolean canOfferBorderless() {
+    /**
+     * @return true when this desktop can run borderless, so the screen-mode control is worth adding
+     */
+    public static boolean canOfferBorderless() {
         return SupportHolder.AVAILABLE;
     }
 
