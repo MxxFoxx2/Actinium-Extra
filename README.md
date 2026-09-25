@@ -1,6 +1,6 @@
 # Celeritas/Actinium Extra
 
-Celeritas/Actinium Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build), built to run on Cleanroom. It adds more graphics, particle, HUD, and window settings to the Celeritas/Actinium video settings screen.
+Celeritas/Actinium Extra is an unofficial client-side add-on for [Celeritas](https://github.com/kappa-maintainer/Celeritas-auto-build) and [Actinium](https://github.com/DHJComical/Actinium/blob/main/README.en.md), built to run on Cleanroom. It adds more graphics, particle, HUD, and window settings to the Celeritas/Actinium video settings screen.
 
 The mod started as a port of features from Sodium Extra and Rubidium/Embeddium Extra. It also includes several additions and backports made specifically for the Cleanroom environment.
 
