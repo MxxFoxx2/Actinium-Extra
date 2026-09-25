@@ -29,6 +29,11 @@ jobs:
       - name: Execute Gradle build
         run: ./gradlew build
 
+      # The -dev jar is a Cleanroom development artifact for runClient setups; publishing it only
+      # gives players a file that cannot be installed. build.yml still keeps it as a CI artifact.
+      - name: Drop the development jar from the release assets
+        run: rm -fv build/libs/*-dev.jar
+
       - uses: ncipollo/release-action@v1.21.0
         with:
           artifacts: "build/libs/*"
