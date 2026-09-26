@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.ForgeEarlyConfig;
 import net.minecraftforge.common.config.Configuration;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.Display;
 
 import java.io.File;
@@ -20,9 +19,10 @@ import java.util.function.Supplier;
  * <p>
  * Settings are grouped into typed holder classes ({@link AnimationSettings}, {@link ParticleSettings},
  * {@link DetailSettings}, {@link RenderSettings}, {@link ExtraSettings}) and persisted to a Forge
- * {@code .cfg} file via {@link Configuration}. Simple boolean and integer options are declared through
- * the {@link BooleanProperty} and {@link IntProperty} tables, while enum-valued and list-valued options
- * are handled explicitly in {@link #loadFromConfig()} and {@link #writeChanges()}.
+ * {@code .cfg} file via {@link Configuration}. Boolean, integer and enum options are declared through
+ * the {@link BooleanProperty}, {@link IntProperty} and {@link EnumProperty} tables; only the
+ * list-valued particle class filters are handled explicitly in {@link #loadFromConfig()} and
+ * {@link #writeChanges()}.
  * <p>
  * Enum options are stored by their ordinal, so the declaration order of the enum constants is part of
  * the on-disk format and must not be reordered.
@@ -172,6 +172,22 @@ public class ActiniumExtraGameOptions {
                     "F3 debug screen refresh interval in ticks",
                     v -> extraSettings.steadyDebugHudRefreshInterval = v, () -> extraSettings.steadyDebugHudRefreshInterval)
     );
+    private final List<EnumProperty<?>> enumProperties = Arrays.asList(
+            // Render settings
+            new EnumProperty<>(CloudTranslucency.class, CAT_RENDER, "cloudTranslucency",
+                    CloudTranslucency.DEFAULT.ordinal(),
+                    "Cloud translucency mode (0 = Default, 1 = Always, 2 = Never)",
+                    v -> renderSettings.cloudTranslucency = v, () -> renderSettings.cloudTranslucency),
+            // Extra settings
+            new EnumProperty<>(OverlayCorner.class, CAT_EXTRA, "overlayCorner",
+                    OverlayCorner.TOP_LEFT.ordinal(),
+                    "Overlay corner position (0=TopLeft, 1=TopRight, 2=BottomLeft, 3=BottomRight)",
+                    v -> extraSettings.overlayCorner = v, () -> extraSettings.overlayCorner),
+            new EnumProperty<>(TextContrast.class, CAT_EXTRA, "textContrast",
+                    TextContrast.SHADOW.ordinal(),
+                    "Text contrast mode (0=None, 1=Background, 2=Shadow)",
+                    v -> extraSettings.textContrast = v, () -> extraSettings.textContrast)
+    );
     private Configuration config;
 
     /**
@@ -204,16 +220,12 @@ public class ActiniumExtraGameOptions {
 
     /**
      * Populates every setting from the loaded {@link Configuration}, including the declarative
-     * boolean/int tables, the ordinal-encoded enum options, and the particle class filter lists.
+     * boolean/int/enum tables and the particle class filter lists.
      */
     private void loadFromConfig() {
         booleanProperties.forEach(p -> p.load(config));
         intProperties.forEach(p -> p.load(config));
-
-        // Enum properties
-        renderSettings.cloudTranslucency = CloudTranslucency.values()[config.getInt("cloudTranslucency", CAT_RENDER, 0, 0, CloudTranslucency.values().length - 1, "Cloud translucency mode (0 = Default, 1 = Always, 2 = Never)")];
-        extraSettings.overlayCorner = OverlayCorner.values()[config.getInt("overlayCorner", CAT_EXTRA, 0, 0, OverlayCorner.values().length - 1, "Overlay corner position (0=TopLeft, 1=TopRight, 2=BottomLeft, 3=BottomRight)")];
-        extraSettings.textContrast = TextContrast.values()[config.getInt("textContrast", CAT_EXTRA, 2, 0, TextContrast.values().length - 1, "Text contrast mode (0=None, 1=Background, 2=Shadow)")];
+        enumProperties.forEach(p -> p.load(config));
 
         // Particle class filter
         String[] disabledClasses = config.getStringList("disabledClasses", CAT_PARTICLE_CLASSES,
@@ -228,18 +240,13 @@ public class ActiniumExtraGameOptions {
     /**
      * Writes all current setting values back to the config file and saves it.
      * <p>
-     * Mirrors {@link #loadFromConfig()}: the boolean/int tables, ordinal-encoded enums, and the
-     * particle class filter lists are all flushed, after which the {@link ParticleClassRegistry} is
-     * marked clean.
+     * Mirrors {@link #loadFromConfig()}: the boolean/int/enum tables and the particle class filter
+     * lists are all flushed, after which the {@link ParticleClassRegistry} is marked clean.
      */
     public void writeChanges() {
         booleanProperties.forEach(p -> p.save(config));
         intProperties.forEach(p -> p.save(config));
-
-        // Enum properties
-        config.get(CAT_RENDER, "cloudTranslucency", 0).set(renderSettings.cloudTranslucency.ordinal());
-        config.get(CAT_EXTRA, "overlayCorner", 0).set(extraSettings.overlayCorner.ordinal());
-        config.get(CAT_EXTRA, "textContrast", 2).set(extraSettings.textContrast.ordinal());
+        enumProperties.forEach(p -> p.save(config));
 
         // Particle class filter
         config.get(CAT_PARTICLE_CLASSES, "disabledClasses", new String[0])
@@ -254,7 +261,7 @@ public class ActiniumExtraGameOptions {
     /**
      * Overlay corner positions for FPS/coordinate display
      */
-    public enum OverlayCorner {
+    public enum OverlayCorner implements Localizable {
         TOP_LEFT("actiniumextra.option.overlay_corner.top_left"),
         TOP_RIGHT("actiniumextra.option.overlay_corner.top_right"),
         BOTTOM_LEFT("actiniumextra.option.overlay_corner.bottom_left"),
@@ -277,7 +284,7 @@ public class ActiniumExtraGameOptions {
      * - BACKGROUND: a translucent rectangle drawn behind the text
      * - SHADOW: a drop shadow behind the glyphs
      */
-    public enum TextContrast {
+    public enum TextContrast implements Localizable {
         NONE("actiniumextra.option.text_contrast.none"),
         BACKGROUND("actiniumextra.option.text_contrast.background"),
         SHADOW("actiniumextra.option.text_contrast.shadow");
@@ -300,7 +307,7 @@ public class ActiniumExtraGameOptions {
      * - ADAPTIVE: vsync that disengages below the refresh rate to reduce stutter, requiring driver
      * support for {@code GLX_EXT_swap_control_tear} / {@code WGL_EXT_swap_control_tear}
      */
-    public enum VerticalSyncOption {
+    public enum VerticalSyncOption implements Localizable {
         OFF("actiniumextra.option.vertical_sync.off"),
         ON("actiniumextra.option.vertical_sync.on"),
         ADAPTIVE("actiniumextra.option.vertical_sync.adaptive");
@@ -320,9 +327,7 @@ public class ActiniumExtraGameOptions {
          * ADAPTIVE requires GLX_EXT_swap_control_tear or WGL_EXT_swap_control_tear.
          */
         public static VerticalSyncOption[] getAvailableOptions() {
-            boolean adaptiveSupported = GLFW.glfwExtensionSupported("GLX_EXT_swap_control_tear")
-                    || GLFW.glfwExtensionSupported("WGL_EXT_swap_control_tear");
-            if (adaptiveSupported) {
+            if (AdaptiveSyncSupport.isSupported()) {
                 return values();
             } else {
                 return new VerticalSyncOption[]{OFF, ON};
@@ -365,9 +370,7 @@ public class ActiniumExtraGameOptions {
                     mc.gameSettings.enableVsync = true;
                 }
                 case ADAPTIVE -> {
-                    boolean supported = GLFW.glfwExtensionSupported("GLX_EXT_swap_control_tear")
-                            || GLFW.glfwExtensionSupported("WGL_EXT_swap_control_tear");
-                    opts.extraSettings.useAdaptiveSync = supported;
+                    opts.extraSettings.useAdaptiveSync = AdaptiveSyncSupport.isSupported();
                     mc.gameSettings.enableVsync = true;
                 }
             }
@@ -380,7 +383,7 @@ public class ActiniumExtraGameOptions {
      * Screen mode options: Windowed, Borderless Fullscreen, Exclusive Fullscreen.
      * Borderless uses Cleanroom's built-in Display.toggleBorderless() via ForgeEarlyConfig.
      */
-    public enum ScreenMode {
+    public enum ScreenMode implements Localizable {
         WINDOWED("actiniumextra.option.screen_mode.windowed"),
         BORDERLESS("actiniumextra.option.screen_mode.borderless"),
         FULLSCREEN("actiniumextra.option.screen_mode.fullscreen");
@@ -439,7 +442,7 @@ public class ActiniumExtraGameOptions {
      * - ALWAYS: clouds are always translucent
      * - NEVER: clouds are never translucent
      */
-    public enum CloudTranslucency {
+    public enum CloudTranslucency implements Localizable {
         DEFAULT("actiniumextra.option.cloud_translucency.default"),
         ALWAYS("actiniumextra.option.cloud_translucency.always"),
         NEVER("actiniumextra.option.cloud_translucency.never");
@@ -606,6 +609,48 @@ public class ActiniumExtraGameOptions {
          */
         void save(Configuration config) {
             config.get(category, key, defaultValue).set(getter.get());
+        }
+    }
+
+    /**
+     * Declarative binding between an enum config entry, stored as an ordinal, and its in-memory field.
+     * <p>
+     * Like {@link BooleanProperty} and {@link IntProperty}, but the on-disk type is an integer whose
+     * valid range is the enum's own ordinal range, so the entry needs the enum class to derive it.
+     * The valid range is recomputed from {@code type} rather than cached, which keeps it correct if a
+     * constant is ever added; {@link Configuration} clamps out-of-range values on load, so a config
+     * file written by a build with more constants than this one still reads back safely.
+     * <p>
+     * The default is carried per row as an ordinal because the enums disagree: cloud translucency and
+     * overlay corner both start at their first constant, while text contrast starts at
+     * {@link TextContrast#SHADOW} rather than {@link TextContrast#NONE}. It is written as the named
+     * constant's ordinal so the entry and the field initializer above cannot drift apart.
+     *
+     * @param type           the enum class, used for its constants and therefore its ordinal range
+     * @param category       the config category the entry lives in
+     * @param key            the entry name within that category
+     * @param defaultOrdinal the ordinal written for a fresh config, matching the bound field's initializer
+     * @param comment        the user-visible comment emitted into the generated config file
+     * @param setter         writes the decoded constant into the in-memory field
+     * @param getter         reads the constant whose ordinal should be stored
+     * @param <E>            the option enum type
+     */
+    private record EnumProperty<E extends Enum<E>>(Class<E> type, String category, String key, int defaultOrdinal,
+                                                String comment, Consumer<E> setter, Supplier<E> getter) {
+        /**
+         * Reads the ordinal from {@code config}, clamped into the enum's ordinal range, and decodes it
+         * into the bound field.
+         */
+        void load(Configuration config) {
+            E[] constants = type.getEnumConstants();
+            setter.accept(constants[config.getInt(key, category, defaultOrdinal, 0, constants.length - 1, comment)]);
+        }
+
+        /**
+         * Writes the bound field's current value into {@code config} as its ordinal.
+         */
+        void save(Configuration config) {
+            config.get(category, key, defaultOrdinal).set(getter.get().ordinal());
         }
     }
 }
