@@ -59,7 +59,7 @@ public final class CeleritasRendererGlue implements RendererGlue {
     }
 
     /**
-     * Adds the five contributed pages when Celeritas builds its settings screen.
+     * Adds the contributed pages when Celeritas builds its settings screen.
      *
      * @param event the GUI construction event
      */
