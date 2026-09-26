@@ -38,6 +38,12 @@ public class ParticleClassRegistry {
     private static final ParticleClassRegistry INSTANCE = new ParticleClassRegistry();
 
     /**
+     * Package namespace of vanilla Minecraft classes, and the pseudo-mod id attributed to them.
+     */
+    private static final String VANILLA_NAMESPACE = "net.minecraft.";
+    private static final String VANILLA_MOD_ID = "minecraft";
+
+    /**
      * fullClassName -> display simple name (never empty).
      */
     private final ConcurrentHashMap<String, String> discoveredClasses = new ConcurrentHashMap<>();
@@ -92,9 +98,43 @@ public class ParticleClassRegistry {
     }
 
     /**
+     * Vanilla owns no mod container, so a class in the {@code net.minecraft.*} namespace is
+     * attributed to the pseudo-mod id {@code "minecraft"} rather than left unattributed. This
+     * is the single definition of that rule, shared by {@link #resolveModId} and
+     * {@link #getModName} so the two can never disagree about which classes are vanilla.
+     */
+    private static boolean isVanilla(String fullName) {
+        return fullName.startsWith(VANILLA_NAMESPACE);
+    }
+
+    /**
+     * Applies the shared simple-name fallback chain to an already-known simple name: if
+     * {@code simpleName} is missing (null or empty — the case for anonymous classes and for
+     * cache entries persisted without a label) derive one from the fully-qualified name via
+     * {@link #toSimpleName(String)}, and if even that derivation comes up empty fall back to
+     * the fully-qualified name itself. The result is therefore never empty, so it is always
+     * safe to use as a display label.
+     *
+     * @param fullName   fully-qualified class name, used as the last-resort label
+     * @param simpleName the candidate simple name, may be null or empty
+     * @return a non-empty display name
+     */
+    private static String nonEmptySimpleName(String fullName, String simpleName) {
+        String s = simpleName;
+        if (s == null || s.isEmpty()) {
+            s = toSimpleName(fullName);
+        }
+        if (s.isEmpty()) {
+            s = fullName;
+        }
+        return s;
+    }
+
+    /**
      * Resolves a robust, non-empty simple name for a class. Tolerates reflection failures
-     * and empty synthetic names by falling back to {@link #toSimpleName(String)} and finally
-     * to the fully-qualified name, so the result is always usable as a display label.
+     * and empty synthetic names by delegating to the shared fallback chain of
+     * {@link #nonEmptySimpleName(String, String)}, so the result is always usable as a
+     * display label.
      */
     private static String simpleNameOf(Class<?> clazz) {
         String s;
@@ -103,13 +143,7 @@ public class ParticleClassRegistry {
         } catch (Throwable t) {
             s = "";
         }
-        if (s == null || s.isEmpty()) {
-            s = toSimpleName(clazz.getName());
-        }
-        if (s.isEmpty()) {
-            s = clazz.getName();
-        }
-        return s;
+        return nonEmptySimpleName(clazz.getName(), s);
     }
 
     // ------------------------------------------------------------------
@@ -250,8 +284,8 @@ public class ParticleClassRegistry {
      */
     private String resolveModId(Class<?> clazz, IParticleFactory factory) {
         String name = clazz.getName();
-        if (name.startsWith("net.minecraft.")) {
-            return "minecraft";
+        if (isVanilla(name)) {
+            return VANILLA_MOD_ID;
         }
         if (factory != null) {
             String captured = factoryModIds.get(factory);
@@ -323,8 +357,8 @@ public class ParticleClassRegistry {
         if (modName != null) {
             return modName;
         }
-        if (fullClassName.startsWith("net.minecraft.")) {
-            return "minecraft";
+        if (isVanilla(fullClassName)) {
+            return VANILLA_MOD_ID;
         }
         return null;
     }
@@ -436,13 +470,7 @@ public class ParticleClassRegistry {
             if (fullName.isEmpty()) {
                 continue;
             }
-            if (simpleName.isEmpty()) {
-                simpleName = toSimpleName(fullName);
-            }
-            if (simpleName.isEmpty()) {
-                simpleName = fullName;
-            }
-            discoveredClasses.putIfAbsent(fullName, simpleName);
+            discoveredClasses.putIfAbsent(fullName, nonEmptySimpleName(fullName, simpleName));
         }
     }
 
