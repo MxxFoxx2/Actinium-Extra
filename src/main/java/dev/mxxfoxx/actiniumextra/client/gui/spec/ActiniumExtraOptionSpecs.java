@@ -2,6 +2,7 @@ package dev.mxxfoxx.actiniumextra.client.gui.spec;
 
 import dev.mxxfoxx.actiniumextra.ActiniumExtraMod;
 import dev.mxxfoxx.actiniumextra.client.gui.ActiniumExtraGameOptions;
+import dev.mxxfoxx.actiniumextra.client.gui.Localizable;
 import dev.mxxfoxx.actiniumextra.client.particle.ParticleClassRegistry;
 import dev.mxxfoxx.actiniumextra.client.render.cloud.ModernCloudAssets;
 import net.minecraft.client.Minecraft;
@@ -91,7 +92,7 @@ public final class ActiniumExtraOptionSpecs {
             rewrites.add(new StandardRewriteSpec(StandardRewriteSpec.StandardId.FULLSCREEN,
                     OptionSpec.cycling("actiniumextra.option.screen_mode",
                             ActiniumExtraGameOptions.ScreenMode.class,
-                            ActiniumExtraGameOptions.ScreenMode::getLocalizedName,
+                            Localizable.labeler(),
                             ActiniumExtraGameOptions.ScreenMode::apply,
                             ActiniumExtraGameOptions.ScreenMode::getCurrent)));
         }
@@ -101,7 +102,7 @@ public final class ActiniumExtraOptionSpecs {
                         TextSpec.translatableKey("options.vsync"),
                         TextSpec.literalKey("actiniumextra.option.extra.vertical_sync.tooltip"),
                         ActiniumExtraGameOptions.VerticalSyncOption.class,
-                        ActiniumExtraGameOptions.VerticalSyncOption::getLocalizedName,
+                        Localizable.labeler(),
                         ActiniumExtraGameOptions.VerticalSyncOption::getAvailableOptions,
                         ActiniumExtraGameOptions.VerticalSyncOption::apply,
                         ActiniumExtraGameOptions.VerticalSyncOption::getCurrent,
@@ -345,7 +346,7 @@ public final class ActiniumExtraOptionSpecs {
                                 opts -> opts.renderSettings.cloudScale, cloudsOn),
                         OptionSpec.cycling("actiniumextra.option.render.cloud_translucency",
                                 ActiniumExtraGameOptions.CloudTranslucency.class,
-                                ActiniumExtraGameOptions.CloudTranslucency::getLocalizedName,
+                                Localizable.labeler(),
                                 (opts, value) -> opts.renderSettings.cloudTranslucency = value,
                                 opts -> opts.renderSettings.cloudTranslucency, cloudsOn)
                         ),
@@ -421,12 +422,12 @@ public final class ActiniumExtraOptionSpecs {
                                         opts -> opts.extraSettings.ignoreReducedDebugInfo),
                                 OptionSpec.cycling("actiniumextra.option.extra.overlay_corner",
                                         ActiniumExtraGameOptions.OverlayCorner.class,
-                                        ActiniumExtraGameOptions.OverlayCorner::getLocalizedName,
+                                        Localizable.labeler(),
                                         (opts, value) -> opts.extraSettings.overlayCorner = value,
                                         opts -> opts.extraSettings.overlayCorner),
                                 OptionSpec.cycling("actiniumextra.option.extra.text_contrast",
                                         ActiniumExtraGameOptions.TextContrast.class,
-                                        ActiniumExtraGameOptions.TextContrast::getLocalizedName,
+                                        Localizable.labeler(),
                                         (opts, value) -> opts.extraSettings.textContrast = value,
                                         opts -> opts.extraSettings.textContrast)),
                         GroupSpec.titled(group("interface"),
